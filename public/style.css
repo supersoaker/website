@@ -54,6 +54,14 @@
     content: "\F2CE"
 }
 
+.icon-xing:before {
+    content: "\ead4"
+}
+
+.icon-linkedin:before {
+    content: "\eaca"
+}
+
 html {
     box-sizing: border-box;
     height: 100%
