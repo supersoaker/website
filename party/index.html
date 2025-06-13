@@ -408,22 +408,16 @@
       }
     });
     
-    form.addEventListener('submit', (e) => {
-      const nein = form.querySelector('input[value="Nein"]').checked;
-      if (nein) {
-        e.preventDefault();
-        card.innerText = 'Schade, dass du nicht kommst.';
-        return;
-      }
-      // Do NOT replace card content here!
-      // The form will submit to the hidden iframe.
-    });
-    
-    // Listen for the iframe load event to show the success message
+    // Listen for the iframe load event to show the appropriate message
     const iframe = document.querySelector('iframe[name="hidden_iframe"]');
     iframe.addEventListener('load', () => {
-      // Show the success message after form submission
-      card.innerHTML = '<div class="success">🎉 Danke!<br>Wir sehen uns auf der Party 🍸</div>';
+      const ja = form.querySelector('input[value="Ja"]').checked;
+      const nein = form.querySelector('input[value="Nein"]').checked;
+      if (ja) {
+        card.innerHTML = '<div class="success">🎉 Danke!<br>Wir sehen uns auf der Party 🍸</div>';
+      } else if (nein) {
+        card.innerHTML = '<div class="success">Schade, dass du nicht kommst.</div>';
+      }
     });
     
     function shrinkButton() {
