@@ -186,7 +186,7 @@
       position: fixed;
       top: -10vh;
       font-size: 1.6rem;
-      animation: emojiFall 2.2s linear forwards;
+      animation: emojiFall 3s linear forwards;
       z-index: 9999;
       pointer-events: none;
     }
@@ -327,7 +327,7 @@
         el.style.fontSize = (1.2 + Math.random() * 1.2) + 'rem';
         el.style.animationDuration = (1.5 + Math.random() * 0.8) + 's';
         document.body.appendChild(el);
-        setTimeout(() => el.remove(), 2200);
+        setTimeout(() => el.remove(), 3000);
       }
     }
 
@@ -361,9 +361,6 @@
         btn.style.setProperty('--tx', '0');
         btn.style.setProperty('--ty', '0');
       }
-    });
-    form.addEventListener('submit', e => {
-      card.innerHTML = '<div class="success">🎉 Danke!<br>Wir sehen uns beim BBQ.</div>';
     });
 
     // ---------- Scroll Tilt via Garland click ----------
@@ -415,14 +412,16 @@
       const nein = form.querySelector('input[value="Nein"]').checked;
       if (nein) {
         e.preventDefault();
-        btn.innerText = 'Schade, dass du nicht kommst.';
+        card.innerText = 'Schade, dass du nicht kommst.';
         return;
       }
-      card.innerHTML = '<div class="success">🎉 Danke!<br>Wir sehen uns beim BBQ.</div>';
+      card.innerHTML = '<div class="success">🎉 Danke!<br>Wir sehen uns auf der Party 🍸</div>';
     });
     
     function shrinkButton() {
-      btn.style.transform = 'scale(0.3)';
+
+      btn.style.transition = 'transform 2s ease-in-out';
+      btn.style.transform = 'scale(0.4)';
     }
     
     function playSound() {
@@ -432,7 +431,7 @@
         activeSound.currentTime = 0;
       }
     
-      activeSound = new Audio('https://www.myinstants.com/media/sounds/oh-no-no-no-no-laugh.mp3');
+      activeSound = new Audio('https://www.myinstants.com/media/sounds/tf_nemesis.mp3');
       activeSound.play();
     }
   </script>
