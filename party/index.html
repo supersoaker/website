@@ -415,6 +415,14 @@
         card.innerText = 'Schade, dass du nicht kommst.';
         return;
       }
+      // Do NOT replace card content here!
+      // The form will submit to the hidden iframe.
+    });
+    
+    // Listen for the iframe load event to show the success message
+    const iframe = document.querySelector('iframe[name="hidden_iframe"]');
+    iframe.addEventListener('load', () => {
+      // Show the success message after form submission
       card.innerHTML = '<div class="success">🎉 Danke!<br>Wir sehen uns auf der Party 🍸</div>';
     });
     
