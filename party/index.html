@@ -4,193 +4,172 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Talk THIRTY to me!</title>
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --beige: #fee7b6;
-      --red: #cc2d22;
-      --gray: #505050;
-      --black: #000;
-      --white: #fff;
+    :root{
+      --beige:#fee7b6;
+      --red:#cc2d22;
+      --gray:#505050;
+      --black:#000;
+      --white:#fff;
     }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "Inter", sans-serif;
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;}
+    body,html{height:100%;background:var(--beige);color:var(--gray);}
+    .container{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      padding:1rem;
     }
-    body {
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--beige);
-      color: var(--black);
+    .card{
+      background:var(--white);
+      max-width:480px;
+      width:100%;
+      padding:2rem;
+      border-radius:24px;
+      box-shadow:0 8px 20px #50505033;
+      text-align:center;
+      position:relative;
+      transition:transform .3s;
     }
-    .card {
-      background: var(--white);
-      padding: 2rem;
-      border-radius: 24px;
-      box-shadow: 0 4px 16px rgba(80, 80, 80, 0.2);
-      max-width: 480px;
-      width: 90%;
-      text-align: center;
-      transition: opacity 0.3s ease;
+    h1{
+      font-family:'Bebas Neue',cursive;
+      font-size:clamp(2.5rem,6vw,3.5rem);
+      letter-spacing:.05em;
+      color:var(--red);
+      margin-bottom:.5rem;
+      text-transform:uppercase;
     }
-    h1 {
-      font-family: "Bebas Neue", sans-serif;
-      font-size: clamp(2.5rem, 5vw, 4rem);
-      letter-spacing: 0.05em;
-      color: var(--red);
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
+    p.sub{
+      margin-bottom:1.5rem;
+      font-weight:600;
     }
-    p {
-      color: var(--gray);
-      margin-bottom: 1.5rem;
-      font-weight: 600;
+    label{display:block;text-align:left;margin-top:1rem;margin-bottom:.25rem;font-weight:600;}
+    input[type="text"]{
+      width:100%;padding:.75rem 1rem;border:2px solid var(--gray);border-radius:8px;font-size:1rem;
     }
-    label {
-      display: block;
-      text-align: left;
-      margin-bottom: 0.25rem;
-      font-weight: 600;
+    .radio-group{display:flex;gap:1rem;margin-top:.5rem;}
+    .radio-group label{display:flex;align-items:center;font-weight:400;}
+    .radio-group input{accent-color:var(--red);margin-right:.25rem;}
+    button[type="submit"]{
+      margin-top:1.5rem;
+      width:100%;
+      padding:1rem;
+      background:var(--red);
+      color:var(--white);
+      font-weight:700;
+      border:none;
+      border-radius:8px;
+      font-size:1.125rem;
+      cursor:pointer;
+      transition:background .2s, transform .2s;
     }
-    input[type="text"] {
-      width: 100%;
-      padding: 0.6rem 0.8rem;
-      border: 1px solid var(--gray);
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      font-size: 1rem;
-      min-height: 44px;
+    button[type="submit"]:hover{background:#a6221a;}
+    button[type="submit"].avoid:hover{transform:translateX(var(--tx,0)) translateY(var(--ty,0)) scale(.9);}
+    /* success state */ 
+    .success{
+      font-family:'Bebas Neue',cursive;
+      font-size:clamp(2rem,5vw,3.5rem);
+      color:var(--red);
+      animation:fadeIn .4s ease-in-out forwards;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:50vh;
+      text-align:center;
     }
-    .radio-group {
-      display: flex;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-    .radio-group label {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-weight: 400;
-      color: var(--black);
-    }
-    input[type="radio"] {
-      accent-color: var(--red);
-      width: 18px;
-      height: 18px;
-    }
-    button,
-    input[type="submit"] {
-      width: 100%;
-      background: var(--red);
-      color: var(--white);
-      border: none;
-      padding: 1rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: filter 0.2s ease;
-      min-height: 44px;
-    }
-    button:hover,
-    input[type="submit"]:hover {
-      filter: brightness(0.92);
-    }
-    button:focus,
-    input[type="submit"]:focus,
-    input[type="text"]:focus {
-      outline: 2px dashed var(--red);
-      outline-offset: 2px;
-    }
-    .sent {
-      opacity: 0;
-      pointer-events: none;
-    }
-    .thanks {
-      display: none;
-      font-size: 1.5rem;
-      font-family: "Bebas Neue", sans-serif;
-      color: var(--red);
-      text-align: center;
-    }
-    .show {
-      display: block;
-      animation: fade 0.3s ease forwards;
-    }
-    @keyframes fade {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+    /* garland */ 
+    .garland{
+      position:absolute;
+      top:0;
+      left:0;
+      width:960px;
+      pointer-events:none;
+      transform:rotate(-5deg) translate(-10%,-30%);
     }
   </style>
 </head>
 <body>
-  <div class="card" id="card">
-    <h1>Talk THIRTY to me!</h1>
-    <p>26. 07. 2025 · 15 Uhr · Holunderweg 17, Seevetal</p>
-
-    <form
-      id="rsvpForm"
-      action="https://docs.google.com/forms/d/e/1FAIpQLScT6YcNF0bdA23qhFni-vAFEZjoMcPxRFHo-lTu3SEWxQ9aSA/formResponse"
-      method="POST"
-      target="hidden_iframe"
-    >
-      <label for="name">Name:</label>
-      <input
-        type="text"
-        name="entry.774546433"
-        id="name"
-        placeholder="Dein Vorname"
-        required
-      />
-
-      <label style="margin-top: 0.5rem">Kommst du?</label>
-      <div class="radio-group">
-        <label>
-          <input
-            type="radio"
-            name="entry.1551877029"
-            value="Ja"
-            required
-          />Ja
-        </label>
-        <label>
-          <input type="radio" name="entry.1551877029" value="Nein" />Nein
-        </label>
-      </div>
-
-      <input type="submit" value="Senden" />
-    </form>
+  <div class="container">
+    <img class="garland" src="./wimpel.png" alt="Garland">
+    <div class="card" id="card">
+      <h1>Talk THIRTY to me!</h1>
+      <p class="sub">26. 07. 2025 · 15&nbsp;Uhr · Holunderweg&nbsp;17, Seevetal</p>
+      <form id="rsvpForm" action="https://docs.google.com/forms/d/e/1FAIpQLScT6YcNF0bdA23qhFni-vAFEZjoMcPxRFHo-lTu3SEWxQ9aSA/formResponse" method="POST" target="hidden_iframe">
+        <label for="name">Name:</label>
+        <input type="text" name="entry.774546433" id="name" required>
+        <label>Kommst du?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="entry.1551877029" value="Ja" required>Ja</label>
+          <label><input type="radio" name="entry.1551877029" value="Nein">Nein</label>
+        </div>
+        <button type="submit" id="submitBtn">Senden</button>
+      </form>
+      <iframe name="hidden_iframe" style="display:none;"></iframe>
+    </div>
   </div>
-
-  <div class="thanks" id="thanks">🎉 Danke! Wir sehen uns beim BBQ.</div>
-
-  <iframe name="hidden_iframe" style="display: none"></iframe>
-
   <script>
-    // Flag to detect submit completion via hidden iframe
-    let submitted = false;
-    document.getElementById("rsvpForm").addEventListener("submit", () => {
-      submitted = true;
-    });
-
-    // When the iframe loads after form submission, swap the content
-    document.querySelector("iframe[name='hidden_iframe']").addEventListener("load", () => {
-      if (submitted) {
-        document.getElementById("card").classList.add("sent");
-        document.getElementById("thanks").classList.add("show");
+    const form = document.getElementById('rsvpForm');
+    const card = document.getElementById('card');
+    const btn = document.getElementById('submitBtn');
+    
+    let activeSound = null; // track currently playing sound
+    
+    form.addEventListener('change', () => {
+      const nein = form.querySelector('input[value="Nein"]').checked;
+    
+      if (nein) {
+        btn.classList.add('avoid');
+        shrinkButton();
+        playSound();
+      } else {
+        btn.classList.remove('avoid');
+    
+        // Reset all funny effects
+        btn.style.transform = '';
+        btn.style.setProperty('--tx', '0');
+        btn.style.setProperty('--ty', '0');
+        btn.innerText = 'Senden';
+    
+        // Stop active sound
+        if (activeSound && typeof activeSound.pause === 'function') {
+          activeSound.pause();
+          activeSound.currentTime = 0;
+          activeSound = null;
+        }
       }
     });
-  </script>
+    
+    form.addEventListener('submit', (e) => {
+      const nein = form.querySelector('input[value="Nein"]').checked;
+      if (nein) {
+        e.preventDefault();
+        btn.innerText = 'Schade, dass du nicht kommst.';
+        return;
+      }
+      card.innerHTML = '<div class="success">🎉 Danke!<br>Wir sehen uns beim BBQ.</div>';
+    });
+    
+    function shrinkButton() {
+      btn.style.transform = 'scale(0.3)';
+    }
+    
+    function playSound() {
+      // Stop previous sound first
+      if (activeSound && typeof activeSound.pause === 'function') {
+        activeSound.pause();
+        activeSound.currentTime = 0;
+      }
+    
+      activeSound = new Audio('https://www.myinstants.com/media/sounds/oh-no-no-no-no-laugh.mp3');
+      activeSound.play();
+    }
+    </script>
+    
+    
 </body>
 </html>
-
