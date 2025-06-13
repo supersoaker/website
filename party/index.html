@@ -1,1 +1,196 @@
-hello w
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Talk THIRTY to me!</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --beige: #fee7b6;
+      --red: #cc2d22;
+      --gray: #505050;
+      --black: #000;
+      --white: #fff;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", sans-serif;
+    }
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--beige);
+      color: var(--black);
+    }
+    .card {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 24px;
+      box-shadow: 0 4px 16px rgba(80, 80, 80, 0.2);
+      max-width: 480px;
+      width: 90%;
+      text-align: center;
+      transition: opacity 0.3s ease;
+    }
+    h1 {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      letter-spacing: 0.05em;
+      color: var(--red);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+    p {
+      color: var(--gray);
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+    label {
+      display: block;
+      text-align: left;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--gray);
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      min-height: 44px;
+    }
+    .radio-group {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 400;
+      color: var(--black);
+    }
+    input[type="radio"] {
+      accent-color: var(--red);
+      width: 18px;
+      height: 18px;
+    }
+    button,
+    input[type="submit"] {
+      width: 100%;
+      background: var(--red);
+      color: var(--white);
+      border: none;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: filter 0.2s ease;
+      min-height: 44px;
+    }
+    button:hover,
+    input[type="submit"]:hover {
+      filter: brightness(0.92);
+    }
+    button:focus,
+    input[type="submit"]:focus,
+    input[type="text"]:focus {
+      outline: 2px dashed var(--red);
+      outline-offset: 2px;
+    }
+    .sent {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .thanks {
+      display: none;
+      font-size: 1.5rem;
+      font-family: "Bebas Neue", sans-serif;
+      color: var(--red);
+      text-align: center;
+    }
+    .show {
+      display: block;
+      animation: fade 0.3s ease forwards;
+    }
+    @keyframes fade {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <h1>Talk THIRTY to me!</h1>
+    <p>26. 07. 2025 · 15 Uhr · Holunderweg 17, Seevetal</p>
+
+    <form
+      id="rsvpForm"
+      action="https://docs.google.com/forms/d/e/1FAIpQLScT6YcNF0bdA23qhFni-vAFEZjoMcPxRFHo-lTu3SEWxQ9aSA/formResponse"
+      method="POST"
+      target="hidden_iframe"
+    >
+      <label for="name">Name:</label>
+      <input
+        type="text"
+        name="entry.774546433"
+        id="name"
+        placeholder="Dein Vorname"
+        required
+      />
+
+      <label style="margin-top: 0.5rem">Kommst du?</label>
+      <div class="radio-group">
+        <label>
+          <input
+            type="radio"
+            name="entry.1551877029"
+            value="Ja"
+            required
+          />Ja
+        </label>
+        <label>
+          <input type="radio" name="entry.1551877029" value="Nein" />Nein
+        </label>
+      </div>
+
+      <input type="submit" value="Senden" />
+    </form>
+  </div>
+
+  <div class="thanks" id="thanks">🎉 Danke! Wir sehen uns beim BBQ.</div>
+
+  <iframe name="hidden_iframe" style="display: none"></iframe>
+
+  <script>
+    // Flag to detect submit completion via hidden iframe
+    let submitted = false;
+    document.getElementById("rsvpForm").addEventListener("submit", () => {
+      submitted = true;
+    });
+
+    // When the iframe loads after form submission, swap the content
+    document.querySelector("iframe[name='hidden_iframe']").addEventListener("load", () => {
+      if (submitted) {
+        document.getElementById("card").classList.add("sent");
+        document.getElementById("thanks").classList.add("show");
+      }
+    });
+  </script>
+</body>
+</html>
+
