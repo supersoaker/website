@@ -157,7 +157,7 @@
       position: absolute;
       top: 0;
       left: 0;
-      width: 70rem;
+      width: 60rem;
       transform: rotate(-5deg) translate(-10%, -30%);
       pointer-events: auto;
       cursor: pointer;
@@ -205,12 +205,48 @@
 .spin-once {
   animation: spinOnce 0.8s ease-out;
 }
+.balloon-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0; /* stays behind .card */
+}
+
+.balloon {
+  position: absolute;
+  bottom: -60px;
+  font-size: 2rem;
+  opacity: 0.85;
+  animation: floatUp linear infinite;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-110vh) translateX(-20px);
+    opacity: 0;
+  }
+}
+
 
 
   </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
 </head>
 
 <body>
+  <!-- Add in HTML -->
+  <div class="balloon-wrapper"></div>
+
+
   <div class="container">
     <!-- Garland Image (truncated base64 for brevity) -->
     <img class="garland" id="garland"
@@ -239,6 +275,31 @@
   </div>
 
   <script>
+    const wrapper = document.querySelector('.balloon-wrapper');
+    
+    // Customize your colors
+    const colors = ['#e63946', '#f1c40f', '#2ecc71', '#3498db', '#9b59b6', '#ff69b4'];
+    
+    function spawnBalloon() {
+      const b = document.createElement('i');
+      b.classList.add('bi', 'bi-balloon-fill', 'balloon');
+    
+      b.style.left = Math.random() * 100 + 'vw';
+      b.style.animationDuration = (12 + Math.random() * 8) + 's';
+      b.style.animationDelay = Math.random() * 5 + 's';
+      b.style.color = colors[Math.floor(Math.random() * colors.length)];
+      b.style.fontSize = (1.5 + Math.random() * 2) + 'rem';
+    
+      wrapper.appendChild(b);
+    
+      setTimeout(() => b.remove(), 20000);
+    }
+    
+    // Spawn continuously
+    setInterval(spawnBalloon, 400);
+    for (let i = 0; i < 20; i++) spawnBalloon(); // initial batch
+    
+
     // ---------- Konfetti Kanone ----------
     function shootConfetti(count = 80) {
       const colors = ['#cc2d22', '#fee7b6', '#505050', '#000', '#fff', '#f4b400', '#34a853'];
