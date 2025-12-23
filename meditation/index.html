@@ -294,6 +294,7 @@
             <div class="field" style="min-width: 200px;">
               <div class="label">Phase-change bell</div>
               <select id="phaseBellSelect" aria-label="Phase bell select">
+                <option value="glass">Glass Ping</option>
                 <option value="bowl">Tibetan Bowl</option>
                 <option value="chime">Soft Chime</option>
                 <option value="crystal">Crystal Bell</option>
@@ -305,7 +306,6 @@
                 <option value="kalimba">Kalimba Pluck</option>
                 <option value="handpan">Handpan Tap</option>
                 <option value="deepbowl">Deep Bowl</option>
-                <option value="glass">Glass Ping</option>
                 <option value="waterdrop">Water Drop</option>
                 <option value="marimba">Marimba Click</option>
                 <option value="shimmer">Shimmer Bell</option>
@@ -331,6 +331,7 @@
               <div class="label">End-session bell</div>
               <select id="endBellSelect" aria-label="End bell select">
                 <option value="bowl">Tibetan Bowl</option>
+                <option value="glass">Glass Ping</option>
                 <option value="chime" selected>Soft Chime</option>
                 <option value="crystal">Crystal Bell</option>
                 <option value="wood">Wood Block</option>
@@ -457,8 +458,8 @@
     bellOnPhase: false,
     bellOnEnd: true,
 
-    phaseBell: "bowl",
-    endBell: "chime",
+    phaseBell: "glass",
+    endBell: "bowl",
     bellVolume: 35,
 
     keepAwake: false,
