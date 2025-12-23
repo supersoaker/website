@@ -1101,10 +1101,6 @@
     sessionLeftEl.textContent = mmss(Math.ceil(sessionRemaining));
   };
 
-  // -----------------------------
-  // Wake lock
-  // -----------------------------
-  let wakeLock = null;
   const setKeepAwake = async (on) => {
     settings.keepAwake = on;
     toggleSwitch(wakeSwitch, on);
