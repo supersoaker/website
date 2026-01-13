@@ -1,0 +1,1476 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sleep Toolkit Tracker (Local)</title>
+  <style>
+    :root{
+      --bg:#0b0c10;
+      --card:#12141b;
+      --muted:#9aa4b2;
+      --text:#e8edf3;
+      --border:#232737;
+      --accent:#7c5cff;
+      --good:#43d17a;
+      --warn:#ffcc66;
+      --bad:#ff5c7a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:16px;
+      --radius2:12px;
+      --pad:14px;
+      --max:1100px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: radial-gradient(1000px 700px at 20% -10%, rgba(124,92,255,.18), transparent 55%),
+                  radial-gradient(900px 600px at 90% 20%, rgba(67,209,122,.10), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit}
+    .wrap{max-width:var(--max); margin:0 auto; padding:22px;}
+    header{
+      display:flex; gap:16px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+    .title{
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .title h1{margin:0; font-size:22px; letter-spacing:.2px}
+    .title .sub{color:var(--muted); font-size:13px; line-height:1.35}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border:1px solid var(--border); border-radius:999px;
+      background:rgba(255,255,255,.03);
+      font-size:12px; color:var(--muted);
+    }
+    .pill b{color:var(--text); font-weight:600}
+    .row{display:flex; gap:14px; align-items:stretch; flex-wrap:wrap}
+    .card{
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .card .hd{
+      padding:14px 14px 10px 14px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      border-bottom:1px solid rgba(255,255,255,.04);
+    }
+    .card .hd h2{margin:0; font-size:15px; letter-spacing:.2px}
+    .card .bd{padding:14px}
+    .grid{
+      grid-template-columns: repeat(12, 1fr);
+      gap:14px;
+    }
+    .col-12{grid-column: span 12}
+    .col-8{grid-column: span 8}
+    .col-6{grid-column: span 6}
+    .col-5{grid-column: span 5}
+    .col-4{grid-column: span 4}
+    .col-3{grid-column: span 3}
+    @media (max-width: 980px){
+      .col-8,.col-6,.col-5,.col-4,.col-3{grid-column: span 12}
+    }
+    .tabs{
+      display:flex; gap:8px; flex-wrap:wrap;
+      margin:12px 0 18px 0;
+    }
+    .tab{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-size:13px;
+      transition:.15s ease;
+      user-select:none;
+    }
+    .tab[aria-selected="true"]{
+      border-color: rgba(124,92,255,.6);
+      background: rgba(124,92,255,.15);
+    }
+    .btn{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:13px;
+      transition:.15s ease;
+      user-select:none;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(255,255,255,.18)}
+    .btn.primary{
+      border-color: rgba(124,92,255,.7);
+      background: rgba(124,92,255,.18);
+    }
+    .btn.danger{
+      border-color: rgba(255,92,122,.6);
+      background: rgba(255,92,122,.12);
+    }
+    .btn.good{
+      border-color: rgba(67,209,122,.65);
+      background: rgba(67,209,122,.12);
+    }
+    .btn.small{padding:7px 10px; border-radius:10px; font-size:12px}
+    .muted{color:var(--muted)}
+    .kpi{
+      display:flex; flex-direction:column; gap:6px;
+      padding:12px; border-radius:var(--radius2);
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.02);
+    }
+    .kpi .label{font-size:12px; color:var(--muted)}
+    .kpi .val{font-size:18px; font-weight:700; letter-spacing:.2px}
+    .kpi .hint{font-size:12px; color:var(--muted); line-height:1.35}
+    .form{
+      display:grid; gap:10px;
+    }
+    label{
+      display:flex; flex-direction:column; gap:6px;
+      font-size:12px; color:var(--muted);
+    }
+    input, select, textarea{
+      width:100%;
+      box-sizing:border-box;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.25);
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 10px;
+      outline:none;
+      font-size:14px;
+    }
+    textarea{min-height:90px; resize:vertical}
+    input:focus, select:focus, textarea:focus{border-color: rgba(124,92,255,.55)}
+    .inline{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    }
+    .inline > *{flex:1}
+    .inline .tight{flex:0 0 auto}
+    .checklist{
+      display:grid; gap:10px;
+    }
+    .item{
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.02);
+      border-radius:var(--radius2);
+      padding:12px;
+      display:flex; gap:12px; align-items:flex-start;
+    }
+    .item input[type="checkbox"]{
+      width:18px; height:18px; margin-top:2px;
+      accent-color: var(--accent);
+      flex:0 0 auto;
+    }
+    .item .txt{display:flex; flex-direction:column; gap:4px}
+    .item .txt .t{font-weight:650; font-size:13px; color:var(--text)}
+    .item .txt .d{font-size:12px; color:var(--muted); line-height:1.35}
+    .tag{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:4px 8px; border-radius:999px; font-size:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      color:var(--muted);
+    }
+    .tag.good{border-color: rgba(67,209,122,.45); background: rgba(67,209,122,.10); color: rgba(232,237,243,.9)}
+    .tag.warn{border-color: rgba(255,204,102,.45); background: rgba(255,204,102,.10); color: rgba(232,237,243,.9)}
+    .tag.bad{border-color: rgba(255,92,122,.45); background: rgba(255,92,122,.10); color: rgba(232,237,243,.9)}
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      background: rgba(255,255,255,.02);
+    }
+    th,td{padding:10px; font-size:12px; border-bottom:1px solid rgba(255,255,255,.06); vertical-align:top}
+    th{color:var(--muted); text-align:left; font-weight:600}
+    tr:last-child td{border-bottom:none}
+    .mono{font-family:var(--mono)}
+    .right{display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap}
+    .note{
+      border-left:3px solid rgba(124,92,255,.6);
+      padding:10px 12px;
+      background: rgba(124,92,255,.08);
+      border-radius:12px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.45;
+    }
+    .ok{color:var(--good)}
+    .bad{color:var(--bad)}
+    .sep{height:1px; background: rgba(255,255,255,.06); margin:12px 0}
+    .hidden{display:none !important}
+    .footer{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:12px;
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    }
+    .toast{
+      position:fixed;
+      bottom:18px; left:50%;
+      transform:translateX(-50%);
+      background: rgba(0,0,0,.6);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      box-shadow: var(--shadow);
+      font-size:13px;
+      z-index:1000;
+      opacity:0;
+      pointer-events:none;
+      transition: .2s ease;
+    }
+    .toast.show{opacity:1; transform:translateX(-50%) translateY(-2px)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Sleep Toolkit Tracker</h1>
+        <div class="sub">Local-only tracker for CBT-I basics, circadian habits, downshift practice, and nightly diary. Data stays in <span class="mono">localStorage</span>.</div>
+      </div>
+      <div class="row">
+        <div class="pill" title="Your core anchor. Keep this stable."><span>Wake time:</span> <b id="pillWake">—</b></div>
+        <div class="pill" title="Time-in-bed window (bedtime derived from wake time)."><span>TIB:</span> <b id="pillTib">—</b></div>
+        <div class="pill" title="Estimated sleep efficiency avg (last 14 entries)."><span>SE 14d:</span> <b id="pillSe">—</b></div>
+      </div>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" data-tab="today" aria-selected="true">Today</button>
+      <button class="tab" data-tab="diary">Diary</button>
+      <button class="tab" data-tab="toolkit">Toolkit</button>
+      <button class="tab" data-tab="plan">14-Day Plan</button>
+      <button class="tab" data-tab="insights">Insights</button>
+      <button class="tab" data-tab="export">Export / Import</button>
+      <button class="tab" data-tab="settings">Settings</button>
+    </div>
+
+    <!-- TODAY -->
+    <section id="tab-today" class="grid">
+      <div class="card col-5">
+        <div class="hd">
+          <h2>Today’s anchors</h2>
+          <span class="tag" id="todayDateTag">—</span>
+        </div>
+        <div class="bd">
+          <div class="form">
+            <div class="inline">
+              <label>Fixed wake time
+                <input id="wakeTime" type="time" />
+              </label>
+              <label>Time in bed (hours)
+                <input id="tibHours" type="number" min="4" max="11" step="0.1" />
+              </label>
+            </div>
+            <div class="note">
+              <b>CBT-I move:</b> keep wake time stable. Bedtime is computed from wake time − TIB.<br/>
+              Your job is to show up for wake time; sleep will follow.
+            </div>
+            <div class="inline">
+              <button class="btn primary" id="saveAnchors">Save anchors</button>
+              <button class="btn" id="setFromAvg">Set TIB from 7-day avg sleep + 0.5h</button>
+            </div>
+          </div>
+          <div class="sep"></div>
+          <div class="kpi">
+            <div class="label">Recommended bedtime (based on anchors)</div>
+            <div class="val mono" id="computedBedtime">—</div>
+            <div class="hint">Use this as your “not-before” bed time when doing sleep restriction.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card col-7">
+        <div class="hd">
+          <h2>Quick habit log</h2>
+          <div class="right">
+            <button class="btn small good" id="markAllDone">Mark all done</button>
+            <button class="btn small" id="clearTodayHabits">Clear</button>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="checklist" id="todayChecklist"></div>
+          <div class="sep"></div>
+          <div class="note">
+            <b>Rule:</b> pick <u>one</u> downshift practice daily. Consistency beats intensity.
+          </div>
+        </div>
+      </div>
+
+      <div class="card col-12">
+        <div class="hd">
+          <h2>Nightly diary (add entry)</h2>
+          <div class="right">
+            <button class="btn primary" id="addEntryBtn">Save entry</button>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="grid">
+            <div class="col-3">
+              <label>Date
+                <input id="entryDate" type="date" />
+              </label>
+            </div>
+            <div class="col-3">
+              <label>Bedtime (lights out)
+                <input id="bedTime" type="time" />
+              </label>
+            </div>
+            <div class="col-3">
+              <label>Wake time
+                <input id="wakeTimeEntry" type="time" />
+              </label>
+            </div>
+            <div class="col-3">
+              <label>Sleep time (est., hours)
+                <input id="sleepHours" type="number" min="0" max="12" step="0.1" />
+              </label>
+            </div>
+
+            <div class="col-4">
+              <label>Sleep latency (min)
+                <input id="sleepLatency" type="number" min="0" max="240" step="5" />
+              </label>
+            </div>
+            <div class="col-4">
+              <label>Wake after sleep onset (min)
+                <input id="waso" type="number" min="0" max="300" step="5" />
+              </label>
+            </div>
+            <div class="col-4">
+              <label>Quality (1–5)
+                <select id="quality">
+                  <option value="1">1 — wrecked</option>
+                  <option value="2">2 — meh</option>
+                  <option value="3" selected>3 — ok</option>
+                  <option value="4">4 — good</option>
+                  <option value="5">5 — great</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="col-6">
+              <label>Caffeine last intake (time)
+                <input id="caffeineTime" type="time" />
+              </label>
+            </div>
+            <div class="col-6">
+              <label>Alcohol
+                <select id="alcohol">
+                  <option value="0" selected>None</option>
+                  <option value="1">1–2 drinks</option>
+                  <option value="2">3+ drinks</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="col-12">
+              <label>Notes (worry parking, stressors, travel, temperature, etc.)
+                <textarea id="notes" placeholder="Example: woke 03:40, room warm; did 4-6 breathing; caffeine 15:00; worry parking helped."></textarea>
+              </label>
+            </div>
+          </div>
+
+          <div class="sep"></div>
+          <div class="note" id="entryHint">Tip: if you’re unsure, rough estimates are fine. The goal is trends, not precision.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIARY -->
+    <section id="tab-diary" class="grid hidden">
+      <div class="card col-12">
+        <div class="hd">
+          <h2>Entries</h2>
+          <div class="right">
+            <button class="btn" id="seedDemo">Add demo week</button>
+            <button class="btn danger" id="deleteAllEntries">Delete all</button>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="note">
+            Sleep efficiency (SE) ≈ <span class="mono">sleepHours / timeInBed</span>. Aim ~85–90% before expanding TIB.
+          </div>
+          <div class="sep"></div>
+          <div style="overflow:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Bed</th>
+                  <th>Wake</th>
+                  <th>Sleep (h)</th>
+                  <th>Latency</th>
+                  <th>WASO</th>
+                  <th>Quality</th>
+                  <th>SE</th>
+                  <th>Caffeine</th>
+                  <th>Alcohol</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="entriesTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOOLKIT -->
+    <section id="tab-toolkit" class="grid hidden">
+      <div class="card col-8">
+        <div class="hd">
+          <h2>Highest-ROI sleep toolkit (impact-ordered)</h2>
+          <span class="tag">Use daily for 2–4 weeks</span>
+        </div>
+        <div class="bd">
+          <div class="checklist" id="toolkitChecklist"></div>
+        </div>
+      </div>
+
+      <div class="card col-4">
+        <div class="hd">
+          <h2>What matters</h2>
+        </div>
+        <div class="bd">
+          <div class="note">
+            <b>CBT-I basics</b> change baseline sleep long-term. Everything else is support.
+          </div>
+          <div class="sep"></div>
+          <div class="note">
+            If you’re awake ~20 min: leave bed, dim light, boring activity, return sleepy.
+          </div>
+          <div class="sep"></div>
+          <div class="note">
+            Supplements are tools. Don’t stack 5 things or you’ll learn nothing.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLAN -->
+    <section id="tab-plan" class="grid hidden">
+      <div class="card col-12">
+        <div class="hd">
+          <h2>14-day sprint plan</h2>
+          <div class="right">
+            <button class="btn primary" id="markPlanToday">Mark today’s tasks done</button>
+            <button class="btn" id="resetPlan">Reset plan</button>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="note">
+            Structure: Days 1–7 anchor wake time + morning light + caffeine cutoff. Day 8 compute TIB. Days 8–14 add stimulus control + worry parking + one downshift practice.
+          </div>
+          <div class="sep"></div>
+          <div class="grid" id="planGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INSIGHTS -->
+    <section id="tab-insights" class="grid hidden">
+      <div class="card col-12">
+        <div class="hd">
+          <h2>Insights (simple, useful)</h2>
+          <div class="right">
+            <button class="btn" id="recalcInsights">Recalculate</button>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="grid">
+            <div class="col-3"><div class="kpi"><div class="label">Avg sleep (7d)</div><div class="val" id="kpiAvgSleep7">—</div><div class="hint">hours</div></div></div>
+            <div class="col-3"><div class="kpi"><div class="label">Avg SE (14d)</div><div class="val" id="kpiSe14">—</div><div class="hint">target ~85–90%</div></div></div>
+            <div class="col-3"><div class="kpi"><div class="label">Caffeine too late</div><div class="val" id="kpiCaffLate">—</div><div class="hint">% of entries past cutoff</div></div></div>
+            <div class="col-3"><div class="kpi"><div class="label">Alcohol nights</div><div class="val" id="kpiAlcohol">—</div><div class="hint">% of entries w/ alcohol</div></div></div>
+
+            <div class="col-12">
+              <div class="note" id="insightNarrative">Add a few entries to unlock insights.</div>
+            </div>
+
+            <div class="col-12">
+              <div style="overflow:auto;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Signal</th>
+                      <th>What it suggests</th>
+                      <th>Next action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="signalsTbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPORT -->
+    <section id="tab-export" class="grid hidden">
+      <div class="card col-6">
+        <div class="hd">
+          <h2>Export</h2>
+        </div>
+        <div class="bd">
+          <div class="note">Export everything as JSON for backup, or CSV for spreadsheet analysis.</div>
+          <div class="sep"></div>
+          <div class="inline">
+            <button class="btn primary" id="exportJson">Download JSON</button>
+            <button class="btn" id="exportCsv">Download CSV</button>
+          </div>
+          <div class="sep"></div>
+          <label>Raw JSON preview
+            <textarea id="jsonPreview" class="mono" readonly></textarea>
+          </label>
+        </div>
+      </div>
+
+      <div class="card col-6">
+        <div class="hd">
+          <h2>Import</h2>
+        </div>
+        <div class="bd">
+          <div class="note">
+            Import a previously exported JSON. This will <b>merge</b> entries by date+bedtime+wake time (basic dedupe).
+          </div>
+          <div class="sep"></div>
+          <div class="form">
+            <input id="importFile" type="file" accept="application/json" />
+            <button class="btn good" id="importJson">Import JSON</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="tab-settings" class="grid hidden">
+      <div class="card col-6">
+        <div class="hd">
+          <h2>Preferences</h2>
+        </div>
+        <div class="bd">
+          <div class="form">
+            <label>Default caffeine cutoff (hours before bed)
+              <input id="caffeineCutoffHours" type="number" min="6" max="14" step="1" />
+            </label>
+            <label>Buffer for TIB (hours)
+              <input id="tibBufferHours" type="number" min="0.3" max="1.5" step="0.1" />
+            </label>
+            <label>What’s your main issue? (optional)
+              <select id="mainIssue">
+                <option value="">—</option>
+                <option value="onset">Falling asleep</option>
+                <option value="maintenance">Staying asleep</option>
+                <option value="early">Waking too early</option>
+              </select>
+            </label>
+            <button class="btn primary" id="savePrefs">Save preferences</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card col-6">
+        <div class="hd">
+          <h2>Danger zone</h2>
+        </div>
+        <div class="bd">
+          <div class="note">
+            This app is local-only. Clearing browser storage will wipe data unless you exported it.
+          </div>
+          <div class="sep"></div>
+          <div class="inline">
+            <button class="btn danger" id="wipeAll">Wipe everything</button>
+            <button class="btn" id="hardReload">Hard reload UI</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <div>Data key: <span class="mono">sleepToolkitTracker:v1</span></div>
+      <div class="muted">Built to be boring and effective.</div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const STORAGE_KEY = "sleepToolkitTracker:v1";
+
+  const defaultState = () => ({
+    version: 1,
+    anchors: { wakeTime: "07:00", tibHours: 7.5 },
+    prefs: { caffeineCutoffHours: 8, tibBufferHours: 0.5, mainIssue: "" },
+    // todayHabits keyed by yyyy-mm-dd -> {habitId: boolean}
+    todayHabits: {},
+    // planProgress keyed by yyyy-mm-dd -> {taskId: boolean}
+    planProgress: {},
+    // entries array (objects)
+    entries: []
+  });
+
+  const habits = [
+    { id: "fixedWake", title: "Fixed wake time (today)", desc: "Wake at your set time, even after a rough night.", group:"CBT-I" },
+    { id: "morningLight", title: "Morning light 10–20 min", desc: "Outdoors within 60 min of waking. Anchors circadian rhythm.", group:"Circadian" },
+    { id: "dimEvening", title: "Dim evening light", desc: "2–3h pre-bed: dim + avoid bright overhead light.", group:"Circadian" },
+    { id: "caffeineCutoff", title: "Caffeine cutoff", desc: "Start with 8h before bed (10–12h if sensitive).", group:"Timing" },
+    { id: "worryParking", title: "Worry parking (10 min)", desc: "2–3h before bed: list worries + next actions.", group:"CBT-I" },
+    { id: "downshift", title: "Downshift practice", desc: "Pick one: physiological sigh x5, 4–6 breathing 5–10 min, or NSDR 10–20 min.", group:"Arousal" },
+    { id: "stimulusControl", title: "Stimulus control (if awake ~20 min)", desc: "Leave bed, boring activity, return only when sleepy.", group:"CBT-I" },
+    { id: "finishMeals", title: "Finish heavy meals 3h before bed", desc: "If hungry: small protein/fat snack.", group:"Environment" },
+    { id: "coolDarkQuiet", title: "Cool / dark / quiet room", desc: "Slightly cool helps; 3–5am wakes often involve temp/alcohol/caffeine.", group:"Environment" },
+    { id: "noAlcohol", title: "No alcohol (ideal)", desc: "Alcohol can worsen deep sleep and cause 3–5am wakeups.", group:"Timing" }
+  ];
+
+  const toolkitItems = [
+    { id:"cbti_wake", title:"Fixed wake time (daily, incl. weekends)", desc:"The strongest lever for circadian stability.", tag:"CBT-I" },
+    { id:"cbti_tib", title:"Time-in-bed window (sane sleep restriction)", desc:"Track 7d sleep → set TIB = avg sleep + 0.5–1h buffer; expand after SE ~85–90%.", tag:"CBT-I" },
+    { id:"cbti_stimulus", title:"Stimulus control", desc:"Bed = sleep + sex only. Awake ~20 min → get up, dim light, boring activity.", tag:"CBT-I" },
+    { id:"cbti_worry", title:"Worry parking (10 min, earlier)", desc:"Do 2–3h before bed so bedtime isn’t 'processing time'.", tag:"CBT-I" },
+    { id:"circadian_am", title:"Morning light within 60 min of waking", desc:"10–20 min outdoors. If cloudy: longer. Consistency wins.", tag:"Circadian" },
+    { id:"circadian_pm", title:"Evening dimming 2–3h pre-bed", desc:"Blue matters, but intensity matters more. Lower brightness + warm shift.", tag:"Circadian" },
+    { id:"arousal", title:"Arousal downshift (daily)", desc:"Physio sigh x5 OR 4–6 breathing 5–10 min OR NSDR 10–20 min.", tag:"Nervous system" },
+    { id:"timing", title:"Caffeine / alcohol / meals timing", desc:"Caffeine cutoff 8h (or 10–12h if sensitive). Alcohol often causes 3–5am wakes. Heavy meals: finish 3h pre-bed.", tag:"Timing" },
+    { id:"bedroom", title:"Bedroom: cool, dark, quiet, boring", desc:"Cheap and real. If waking 3–5am: check temperature + alcohol/caffeine.", tag:"Environment" },
+    { id:"supps", title:"Supplements (only if they match the problem)", desc:"Melatonin low dose 0.3–1mg = circadian shift tool. Magnesium glycinate may help relaxation. Don’t stack.", tag:"Optional" }
+  ];
+
+  // 14-day plan definition
+  const planDays = Array.from({length:14}).map((_,i) => i+1);
+  const planTasks = {
+    1: ["chooseWake", "startDiary"],
+    2: ["fixedWake", "morningLight", "caffeineCutoff"],
+    3: ["fixedWake", "morningLight", "caffeineCutoff"],
+    4: ["fixedWake", "morningLight", "caffeineCutoff"],
+    5: ["fixedWake", "morningLight", "caffeineCutoff"],
+    6: ["fixedWake", "morningLight", "caffeineCutoff"],
+    7: ["fixedWake", "morningLight", "caffeineCutoff"],
+    8: ["computeTIB", "setTIB"],
+    9: ["stimulusControl", "worryParking", "downshift"],
+    10:["stimulusControl", "worryParking", "downshift"],
+    11:["stimulusControl", "worryParking", "downshift"],
+    12:["stimulusControl", "worryParking", "downshift"],
+    13:["stimulusControl", "worryParking", "downshift"],
+    14:["stimulusControl", "worryParking", "downshift","relapsePlan"]
+  };
+
+  const planTaskMeta = {
+    chooseWake: { title:"Choose a wake time", desc:"Pick a time you can keep 90% of days." },
+    startDiary: { title:"Start sleep diary", desc:"Rough estimates are fine. Track nightly." },
+    fixedWake: { title:"Fixed wake time", desc:"Anchor your circadian rhythm." },
+    morningLight: { title:"Morning light", desc:"10–20 min outdoors within 60 min of waking." },
+    caffeineCutoff: { title:"Caffeine cutoff", desc:"Start at 8h before bed; tighten if needed." },
+    computeTIB: { title:"Compute avg sleep (7d)", desc:"Use your diary, then set a time-in-bed window." },
+    setTIB: { title:"Set time-in-bed window", desc:"TIB = avg sleep + 0.5–1h buffer." },
+    stimulusControl: { title:"Stimulus control", desc:"If awake ~20 min, get up, boring activity, return sleepy." },
+    worryParking: { title:"Worry parking", desc:"10 min, done 2–3h before bed." },
+    downshift: { title:"Downshift practice", desc:"Pick ONE daily: physio sigh / 4–6 / NSDR." },
+    relapsePlan: { title:"Relapse plan", desc:"Define what you do during stressful weeks (minimum viable protocol)." }
+  };
+
+  // ---------- helpers ----------
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+  const toast = (msg) => {
+    const el = $("#toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    setTimeout(() => el.classList.remove("show"), 1600);
+  };
+
+  const todayISO = () => {
+    const d = new Date();
+    const tzOffset = d.getTimezoneOffset() * 60000;
+    return new Date(Date.now() - tzOffset).toISOString().slice(0,10);
+  };
+
+  const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+
+  const parseTimeToMinutes = (t) => {
+    if(!t || !/^\d{2}:\d{2}$/.test(t)) return null;
+    const [hh, mm] = t.split(":").map(Number);
+    return hh * 60 + mm;
+  };
+
+  const minutesToTime = (m) => {
+    m = ((m % 1440) + 1440) % 1440;
+    const hh = String(Math.floor(m / 60)).padStart(2,"0");
+    const mm = String(m % 60).padStart(2,"0");
+    return `${hh}:${mm}`;
+  };
+
+  const download = (filename, content, mime="application/octet-stream") => {
+    const blob = new Blob([content], {type:mime});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const safeNumber = (v, def=null) => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : def;
+  };
+
+  // ---------- state ----------
+  let state = load();
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return defaultState();
+      const parsed = JSON.parse(raw);
+      return { ...defaultState(), ...parsed };
+    }catch(e){
+      console.warn("Failed to load state", e);
+      return defaultState();
+    }
+  }
+
+  function save(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    refreshHeaderPills();
+    refreshJsonPreview();
+  }
+
+  // ---------- UI: tabs ----------
+  $$(".tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      $$(".tab").forEach(b => b.setAttribute("aria-selected", "false"));
+      btn.setAttribute("aria-selected", "true");
+      const id = btn.dataset.tab;
+      $$("section[id^='tab-']").forEach(sec => sec.classList.add("hidden"));
+      $(`#tab-${id}`).classList.remove("hidden");
+      if(id === "diary") renderEntries();
+      if(id === "toolkit") renderToolkit();
+      if(id === "plan") renderPlan();
+      if(id === "insights") renderInsights();
+      if(id === "export") refreshJsonPreview();
+    });
+  });
+
+  // ---------- TODAY: anchors ----------
+  function refreshHeaderPills(){
+    $("#pillWake").textContent = state.anchors.wakeTime || "—";
+    $("#pillTib").textContent = `${state.anchors.tibHours?.toFixed?.(1) ?? "—"}h`;
+    $("#computedBedtime").textContent = computeBedtime();
+    $("#pillSe").textContent = formatPct(calcAvgSE(14));
+  }
+
+  function computeBedtime(){
+    const wake = parseTimeToMinutes(state.anchors.wakeTime);
+    const tib = safeNumber(state.anchors.tibHours, null);
+    if(wake == null || tib == null) return "—";
+    const bed = wake - Math.round(tib * 60);
+    return minutesToTime(bed);
+  }
+
+  function initAnchorsUI(){
+    $("#wakeTime").value = state.anchors.wakeTime || "07:00";
+    $("#tibHours").value = String(state.anchors.tibHours ?? 7.5);
+    $("#todayDateTag").textContent = todayISO();
+    $("#entryDate").value = todayISO();
+    $("#wakeTimeEntry").value = state.anchors.wakeTime || "";
+  }
+
+  $("#saveAnchors").addEventListener("click", () => {
+    const wake = $("#wakeTime").value || "07:00";
+    const tib = clamp(safeNumber($("#tibHours").value, 7.5), 4, 11);
+    state.anchors.wakeTime = wake;
+    state.anchors.tibHours = tib;
+    save();
+    toast("Anchors saved");
+    // keep diary wake time aligned
+    $("#wakeTimeEntry").value = wake;
+  });
+
+  $("#setFromAvg").addEventListener("click", () => {
+    const avg = calcAvgSleep(7);
+    if(avg == null){
+      toast("Need at least a few entries");
+      return;
+    }
+    const tib = clamp(avg + (state.prefs.tibBufferHours ?? 0.5), 4, 11);
+    $("#tibHours").value = tib.toFixed(1);
+    toast(`Suggested TIB: ${tib.toFixed(1)}h`);
+  });
+
+  // ---------- TODAY: habits ----------
+  function getTodayHabitsObj(){
+    const key = todayISO();
+    if(!state.todayHabits[key]) state.todayHabits[key] = {};
+    return state.todayHabits[key];
+  }
+
+  function renderTodayChecklist(){
+    const box = $("#todayChecklist");
+    box.innerHTML = "";
+    const t = getTodayHabitsObj();
+    habits.forEach(h => {
+      const wrap = document.createElement("div");
+      wrap.className = "item";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = !!t[h.id];
+      cb.addEventListener("change", () => {
+        t[h.id] = cb.checked;
+        save();
+      });
+      const txt = document.createElement("div");
+      txt.className = "txt";
+      txt.innerHTML = `<div class="t">${h.title} <span class="tag">${h.group}</span></div><div class="d">${h.desc}</div>`;
+      wrap.appendChild(cb);
+      wrap.appendChild(txt);
+      box.appendChild(wrap);
+    });
+  }
+
+  $("#markAllDone").addEventListener("click", () => {
+    const t = getTodayHabitsObj();
+    habits.forEach(h => t[h.id] = true);
+    save();
+    renderTodayChecklist();
+    toast("Done ✅");
+  });
+
+  $("#clearTodayHabits").addEventListener("click", () => {
+    state.todayHabits[todayISO()] = {};
+    save();
+    renderTodayChecklist();
+    toast("Cleared");
+  });
+
+  // ---------- DIARY: add entry ----------
+  function normalizeEntry(e){
+    return {
+      date: e.date, // yyyy-mm-dd
+      bedTime: e.bedTime || "",
+      wakeTime: e.wakeTime || "",
+      sleepHours: safeNumber(e.sleepHours, null),
+      sleepLatency: safeNumber(e.sleepLatency, null),
+      waso: safeNumber(e.waso, null),
+      quality: safeNumber(e.quality, 3),
+      caffeineTime: e.caffeineTime || "",
+      alcohol: safeNumber(e.alcohol, 0),
+      notes: e.notes || ""
+    };
+  }
+
+  function entryKey(e){
+    return `${e.date}|${e.bedTime}|${e.wakeTime}|${e.sleepHours ?? ""}`;
+  }
+
+  function computeTimeInBedHours(e){
+    const bed = parseTimeToMinutes(e.bedTime);
+    const wake = parseTimeToMinutes(e.wakeTime);
+    if(bed == null || wake == null) return null;
+    let diff = wake - bed;
+    if(diff <= 0) diff += 1440;
+    return diff / 60;
+  }
+
+  function computeSE(e){
+    const tib = computeTimeInBedHours(e);
+    const sh = safeNumber(e.sleepHours, null);
+    if(tib == null || sh == null || tib <= 0) return null;
+    return clamp(sh / tib, 0, 1.2);
+  }
+
+  $("#addEntryBtn").addEventListener("click", () => {
+    const e = normalizeEntry({
+      date: $("#entryDate").value || todayISO(),
+      bedTime: $("#bedTime").value,
+      wakeTime: $("#wakeTimeEntry").value || state.anchors.wakeTime,
+      sleepHours: $("#sleepHours").value,
+      sleepLatency: $("#sleepLatency").value,
+      waso: $("#waso").value,
+      quality: $("#quality").value,
+      caffeineTime: $("#caffeineTime").value,
+      alcohol: $("#alcohol").value,
+      notes: $("#notes").value
+    });
+
+    if(!e.date){
+      toast("Pick a date");
+      return;
+    }
+
+    // Basic dedupe: replace if same key exists
+    const k = entryKey(e);
+    const idx = state.entries.findIndex(x => entryKey(x) === k);
+    if(idx >= 0){
+      state.entries[idx] = e;
+      toast("Entry updated");
+    } else {
+      state.entries.push(e);
+      toast("Entry saved");
+    }
+
+    // keep sorted by date asc
+    state.entries.sort((a,b) => (a.date||"").localeCompare(b.date||""));
+    save();
+    $("#notes").value = "";
+    $("#bedTime").value = "";
+    $("#sleepHours").value = "";
+    $("#sleepLatency").value = "";
+    $("#waso").value = "";
+    $("#caffeineTime").value = "";
+    $("#alcohol").value = "0";
+  });
+
+  // ---------- DIARY: render table ----------
+  function renderEntries(){
+    const tbody = $("#entriesTbody");
+    tbody.innerHTML = "";
+    const entries = [...state.entries].sort((a,b) => (b.date||"").localeCompare(a.date||""));
+    if(entries.length === 0){
+      tbody.innerHTML = `<tr><td colspan="12" class="muted">No entries yet. Add one in “Today”.</td></tr>`;
+      return;
+    }
+    entries.forEach((e, i) => {
+      const se = computeSE(e);
+      const seTxt = se == null ? "—" : formatPct(se);
+      const seTag = se == null ? "tag" : (se >= 0.85 ? "tag good" : (se >= 0.75 ? "tag warn" : "tag bad"));
+      const alcoholTxt = e.alcohol === 0 ? "None" : (e.alcohol === 1 ? "1–2" : "3+");
+      const tib = computeTimeInBedHours(e);
+      const notes = (e.notes || "").slice(0, 120) + ((e.notes||"").length > 120 ? "…" : "");
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="mono">${e.date || "—"}</td>
+        <td class="mono">${e.bedTime || "—"}</td>
+        <td class="mono">${e.wakeTime || "—"}</td>
+        <td>${e.sleepHours ?? "—"}</td>
+        <td>${e.sleepLatency ?? "—"}</td>
+        <td>${e.waso ?? "—"}</td>
+        <td>${e.quality ?? "—"}</td>
+        <td><span class="${seTag}">${seTxt}</span><div class="muted" style="font-size:11px; margin-top:4px;">TIB ${tib ? tib.toFixed(1) : "—"}h</div></td>
+        <td class="mono">${e.caffeineTime || "—"}</td>
+        <td>${alcoholTxt}</td>
+        <td title="${escapeHtml(e.notes||"")}">${escapeHtml(notes)}</td>
+        <td>
+          <div class="inline" style="gap:6px;">
+            <button class="btn small" data-edit="${i}">Edit</button>
+            <button class="btn small danger" data-del="${i}">Delete</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // wire actions
+    tbody.querySelectorAll("button[data-del]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = Number(btn.getAttribute("data-del"));
+        // idx is based on sorted desc list. Map to actual entry by date+times
+        const entriesDesc = [...state.entries].sort((a,b) => (b.date||"").localeCompare(a.date||""));
+        const target = entriesDesc[idx];
+        state.entries = state.entries.filter(x => entryKey(x) !== entryKey(target));
+        save();
+        renderEntries();
+        toast("Deleted");
+      });
+    });
+
+    tbody.querySelectorAll("button[data-edit]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = Number(btn.getAttribute("data-edit"));
+        const entriesDesc = [...state.entries].sort((a,b) => (b.date||"").localeCompare(a.date||""));
+        const target = entriesDesc[idx];
+        // fill Today form with entry
+        $("#entryDate").value = target.date || todayISO();
+        $("#bedTime").value = target.bedTime || "";
+        $("#wakeTimeEntry").value = target.wakeTime || state.anchors.wakeTime || "";
+        $("#sleepHours").value = target.sleepHours ?? "";
+        $("#sleepLatency").value = target.sleepLatency ?? "";
+        $("#waso").value = target.waso ?? "";
+        $("#quality").value = String(target.quality ?? 3);
+        $("#caffeineTime").value = target.caffeineTime || "";
+        $("#alcohol").value = String(target.alcohol ?? 0);
+        $("#notes").value = target.notes || "";
+        // switch to today tab
+        switchTab("today");
+        toast("Loaded into form");
+      });
+    });
+  }
+
+  function switchTab(id){
+    const btn = document.querySelector(`.tab[data-tab="${id}"]`);
+    if(btn) btn.click();
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (c) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+    }[c]));
+  }
+
+  // ---------- TOOLKIT ----------
+  function renderToolkit(){
+    const box = $("#toolkitChecklist");
+    box.innerHTML = "";
+    // store toolkit completion in prefs (lightweight)
+    state.prefs.toolkitDone = state.prefs.toolkitDone || {};
+    toolkitItems.forEach(it => {
+      const wrap = document.createElement("div");
+      wrap.className = "item";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = !!state.prefs.toolkitDone[it.id];
+      cb.addEventListener("change", () => {
+        state.prefs.toolkitDone[it.id] = cb.checked;
+        save();
+      });
+      const txt = document.createElement("div");
+      txt.className = "txt";
+      txt.innerHTML = `<div class="t">${it.title} <span class="tag">${it.tag}</span></div><div class="d">${it.desc}</div>`;
+      wrap.appendChild(cb);
+      wrap.appendChild(txt);
+      box.appendChild(wrap);
+    });
+  }
+
+  // ---------- PLAN ----------
+  function getPlanDayDate(dayIndex){
+    // dayIndex 1..14, day 1 = start date (today if not set)
+    state.prefs.planStart = state.prefs.planStart || todayISO();
+    const start = new Date(state.prefs.planStart + "T00:00:00");
+    const d = new Date(start.getTime() + (dayIndex-1)*86400000);
+    const tzOffset = d.getTimezoneOffset() * 60000;
+    return new Date(d.getTime() - tzOffset).toISOString().slice(0,10);
+  }
+
+  function renderPlan(){
+    const grid = $("#planGrid");
+    grid.innerHTML = "";
+    state.prefs.planStart = state.prefs.planStart || todayISO();
+
+    const intro = document.createElement("div");
+    intro.className = "col-12";
+    intro.innerHTML = `
+      <div class="inline">
+        <label class="tight">Plan start date
+          <input id="planStartDate" type="date" value="${state.prefs.planStart}">
+        </label>
+        <button class="btn small" id="savePlanStart">Save</button>
+        <span class="muted">Day 1 = plan start. Today’s tasks are based on the date.</span>
+      </div>
+    `;
+    grid.appendChild(intro);
+
+    intro.querySelector("#savePlanStart").addEventListener("click", () => {
+      const v = intro.querySelector("#planStartDate").value;
+      if(v){
+        state.prefs.planStart = v;
+        save();
+        renderPlan();
+        toast("Plan start updated");
+      }
+    });
+
+    planDays.forEach(day => {
+      const date = getPlanDayDate(day);
+      const tasks = planTasks[day] || [];
+      const prog = state.planProgress[date] || (state.planProgress[date] = {});
+      const isToday = date === todayISO();
+
+      const card = document.createElement("div");
+      card.className = "card col-6";
+      card.innerHTML = `
+        <div class="hd">
+          <h2>Day ${day} <span class="muted">(${date})</span></h2>
+          <span class="tag ${isToday ? "good" : ""}">${isToday ? "Today" : "—"}</span>
+        </div>
+        <div class="bd">
+          <div class="checklist" id="plan-${day}"></div>
+        </div>
+      `;
+      grid.appendChild(card);
+
+      const box = card.querySelector(`#plan-${day}`);
+      tasks.forEach(tid => {
+        const meta = planTaskMeta[tid] || {title:tid, desc:""};
+        const wrap = document.createElement("div");
+        wrap.className = "item";
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = !!prog[tid];
+        cb.addEventListener("change", () => {
+          prog[tid] = cb.checked;
+          state.planProgress[date] = prog;
+          save();
+        });
+        const txt = document.createElement("div");
+        txt.className = "txt";
+        txt.innerHTML = `<div class="t">${meta.title}</div><div class="d">${meta.desc}</div>`;
+        wrap.appendChild(cb);
+        wrap.appendChild(txt);
+        box.appendChild(wrap);
+      });
+    });
+
+    save();
+  }
+
+  $("#markPlanToday").addEventListener("click", () => {
+    const date = todayISO();
+    // find which plan day this is
+    state.prefs.planStart = state.prefs.planStart || todayISO();
+    const start = new Date(state.prefs.planStart + "T00:00:00");
+    const now = new Date(date + "T00:00:00");
+    const dayNum = Math.floor((now - start)/86400000) + 1;
+    if(dayNum < 1 || dayNum > 14){
+      toast("Today is outside the 14-day window");
+      return;
+    }
+    const tasks = planTasks[dayNum] || [];
+    state.planProgress[date] = state.planProgress[date] || {};
+    tasks.forEach(t => state.planProgress[date][t] = true);
+    save();
+    renderPlan();
+    toast("Marked today’s tasks ✅");
+  });
+
+  $("#resetPlan").addEventListener("click", () => {
+    state.planProgress = {};
+    state.prefs.planStart = todayISO();
+    save();
+    renderPlan();
+    toast("Plan reset");
+  });
+
+  // ---------- INSIGHTS ----------
+  function calcAvgSleep(days){
+    const entries = lastNEntries(days);
+    const nums = entries.map(e => safeNumber(e.sleepHours, null)).filter(v => v != null);
+    if(nums.length === 0) return null;
+    return nums.reduce((a,b)=>a+b,0) / nums.length;
+  }
+
+  function lastNEntries(n){
+    const sorted = [...state.entries].sort((a,b) => (b.date||"").localeCompare(a.date||""));
+    return sorted.slice(0, n);
+  }
+
+  function calcAvgSE(days){
+    const entries = lastNEntries(days);
+    const ses = entries.map(computeSE).filter(v => v != null);
+    if(ses.length === 0) return null;
+    return ses.reduce((a,b)=>a+b,0) / ses.length;
+  }
+
+  function formatPct(x){
+    if(x == null) return "—";
+    return `${Math.round(x*100)}%`;
+  }
+
+  function isCaffeineLate(entry){
+    // caffeine cutoff relative to computed bedtime based on anchors.
+    const cutoffH = safeNumber(state.prefs.caffeineCutoffHours, 8);
+    const bed = parseTimeToMinutes(entry.bedTime || computeBedtime());
+    const caf = parseTimeToMinutes(entry.caffeineTime);
+    if(bed == null || caf == null) return null;
+    // cutoff time = bedtime - cutoffH
+    const cutoff = bed - Math.round(cutoffH*60);
+    // compare caf to cutoff on same day; handle wrap by converting to timeline around bedtime
+    // Approach: map times to minutes relative to bedtime window [bed-24h, bed]
+    const cafRel = (caf <= bed) ? caf : caf - 1440;
+    const cutoffRel = (cutoff <= bed) ? cutoff : cutoff - 1440;
+    return cafRel > cutoffRel; // later than cutoff => late
+  }
+
+  function renderInsights(){
+    const avg7 = calcAvgSleep(7);
+    const se14 = calcAvgSE(14);
+
+    $("#kpiAvgSleep7").textContent = avg7 == null ? "—" : avg7.toFixed(2);
+    $("#kpiSe14").textContent = se14 == null ? "—" : formatPct(se14);
+
+    const entries14 = lastNEntries(14);
+    const caffFlags = entries14.map(isCaffeineLate).filter(v => v != null);
+    const caffLatePct = caffFlags.length ? (caffFlags.filter(Boolean).length / caffFlags.length) : null;
+    $("#kpiCaffLate").textContent = caffLatePct == null ? "—" : formatPct(caffLatePct);
+
+    const alcoholFlags = entries14.map(e => (safeNumber(e.alcohol,0) > 0)).filter(v => v != null);
+    const alcoholPct = alcoholFlags.length ? (alcoholFlags.filter(Boolean).length / alcoholFlags.length) : null;
+    $("#kpiAlcohol").textContent = alcoholPct == null ? "—" : formatPct(alcoholPct);
+
+    $("#insightNarrative").textContent = buildNarrative({avg7, se14, caffLatePct, alcoholPct});
+
+    renderSignals({avg7, se14, caffLatePct, alcoholPct});
+    refreshHeaderPills();
+  }
+
+  function buildNarrative({avg7, se14, caffLatePct, alcoholPct}){
+    if(state.entries.length < 3) return "Add a few entries (3–5) and I’ll start showing patterns.";
+    const bits = [];
+    if(se14 != null){
+      if(se14 >= 0.85) bits.push("Your sleep efficiency is in the target zone — consider expanding TIB slowly (+15–20 min).");
+      else if(se14 >= 0.75) bits.push("Sleep efficiency is medium — keep TIB tight and protect fixed wake time.");
+      else bits.push("Sleep efficiency is low — a tighter TIB window + strict stimulus control should help.");
+    }
+    if(caffLatePct != null){
+      if(caffLatePct > 0.3) bits.push("Caffeine timing looks like a likely lever. Try moving last intake earlier by 60–90 min.");
+      else bits.push("Caffeine timing looks mostly clean.");
+    }
+    if(alcoholPct != null && alcoholPct > 0.2){
+      bits.push("Alcohol shows up often enough to matter. If you wake 3–5am, test a 7-day zero-alcohol block.");
+    }
+    if(avg7 != null && avg7 < 6.5){
+      bits.push("Average sleep is on the low side — if SE improves, expand TIB to capture more sleep time.");
+    }
+    return bits.join(" ");
+  }
+
+  function renderSignals({avg7, se14, caffLatePct, alcoholPct}){
+    const tbody = $("#signalsTbody");
+    tbody.innerHTML = "";
+
+    const rows = [];
+
+    if(se14 != null && se14 < 0.85){
+      rows.push({
+        signal:`SE below target (${formatPct(se14)})`,
+        suggests:"Too much time in bed vs. actual sleep (or inconsistent schedule).",
+        action:"Keep fixed wake time. Set TIB = avg sleep + 0.5–1h. Use stimulus control for awakenings."
+      });
+    }
+    if(caffLatePct != null && caffLatePct > 0.3){
+      rows.push({
+        signal:`Caffeine often after cutoff (${formatPct(caffLatePct)})`,
+        suggests:"Sleep onset/maintenance may be being dragged by caffeine half-life.",
+        action:`Move caffeine earlier. Start cutoff at ${state.prefs.caffeineCutoffHours}h pre-bed; adjust to 10–12h if needed.`
+      });
+    }
+    if(alcoholPct != null && alcoholPct > 0.2){
+      rows.push({
+        signal:`Alcohol on ${formatPct(alcoholPct)} of nights`,
+        suggests:"Higher odds of fragmented sleep and 3–5am wakeups.",
+        action:"Run a 7-night experiment: 0 alcohol. Compare WASO + quality."
+      });
+    }
+    if(avg7 != null && avg7 < 6.5){
+      rows.push({
+        signal:`Avg sleep low (${avg7.toFixed(2)}h)`,
+        suggests:"You may need more sleep opportunity after efficiency improves.",
+        action:"First raise SE. Then expand TIB by 15–20 min every 3–4 nights if SE stays ≥85%."
+      });
+    }
+    if(rows.length === 0){
+      rows.push({
+        signal:"Not enough data / no strong signal yet",
+        suggests:"Keep logging — trends show after ~7–14 entries.",
+        action:"Stick to wake time + morning light + caffeine cutoff. Add stimulus control if you’re awake in bed."
+      });
+    }
+
+    rows.forEach(r => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${r.signal}</td><td>${r.suggests}</td><td>${r.action}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  $("#recalcInsights").addEventListener("click", () => {
+    renderInsights();
+    toast("Recalculated");
+  });
+
+  // ---------- EXPORT / IMPORT ----------
+  function refreshJsonPreview(){
+    const json = JSON.stringify(state, null, 2);
+    $("#jsonPreview").value = json;
+  }
+
+  $("#exportJson").addEventListener("click", () => {
+    const json = JSON.stringify(state, null, 2);
+    const name = `sleep-tracker-backup-${todayISO()}.json`;
+    download(name, json, "application/json");
+    toast("Downloaded JSON");
+  });
+
+  $("#exportCsv").addEventListener("click", () => {
+    const headers = [
+      "date","bedTime","wakeTime","sleepHours","timeInBedHours","sleepEfficiency",
+      "sleepLatency","waso","quality","caffeineTime","alcohol","notes"
+    ];
+    const lines = [headers.join(",")];
+
+    state.entries.forEach(e => {
+      const tib = computeTimeInBedHours(e);
+      const se = computeSE(e);
+      const row = [
+        e.date,
+        e.bedTime,
+        e.wakeTime,
+        (e.sleepHours ?? ""),
+        (tib != null ? tib.toFixed(2) : ""),
+        (se != null ? se.toFixed(3) : ""),
+        (e.sleepLatency ?? ""),
+        (e.waso ?? ""),
+        (e.quality ?? ""),
+        (e.caffeineTime ?? ""),
+        (e.alcohol ?? 0),
+        csvEscape(e.notes ?? "")
+      ];
+      lines.push(row.join(","));
+    });
+
+    download(`sleep-tracker-entries-${todayISO()}.csv`, lines.join("\n"), "text/csv");
+    toast("Downloaded CSV");
+  });
+
+  function csvEscape(s){
+    const str = String(s ?? "");
+    if(/[",\n]/.test(str)) return `"${str.replace(/"/g,'""')}"`;
+    return str;
+  }
+
+  $("#importJson").addEventListener("click", async () => {
+    const file = $("#importFile").files?.[0];
+    if(!file){ toast("Pick a JSON file"); return; }
+    try{
+      const text = await file.text();
+      const incoming = JSON.parse(text);
+      mergeIncoming(incoming);
+      save();
+      toast("Imported ✅");
+      renderEntries();
+      renderInsights();
+    }catch(e){
+      console.error(e);
+      toast("Import failed");
+    }
+  });
+
+  function mergeIncoming(incoming){
+    if(!incoming || typeof incoming !== "object") return;
+    // merge anchors/prefs shallowly
+    if(incoming.anchors) state.anchors = { ...state.anchors, ...incoming.anchors };
+    if(incoming.prefs) state.prefs = { ...state.prefs, ...incoming.prefs };
+
+    // merge habits + planProgress
+    if(incoming.todayHabits) state.todayHabits = { ...state.todayHabits, ...incoming.todayHabits };
+    if(incoming.planProgress) state.planProgress = { ...state.planProgress, ...incoming.planProgress };
+
+    // merge entries with dedupe by entryKey
+    const existingKeys = new Set(state.entries.map(entryKey));
+    const incomingEntries = Array.isArray(incoming.entries) ? incoming.entries : [];
+    incomingEntries.forEach(e0 => {
+      const e = normalizeEntry(e0);
+      const k = entryKey(e);
+      if(!existingKeys.has(k)){
+        state.entries.push(e);
+        existingKeys.add(k);
+      }
+    });
+    state.entries.sort((a,b) => (a.date||"").localeCompare(b.date||""));
+  }
+
+  // ---------- SETTINGS ----------
+  function initPrefsUI(){
+    $("#caffeineCutoffHours").value = String(state.prefs.caffeineCutoffHours ?? 8);
+    $("#tibBufferHours").value = String(state.prefs.tibBufferHours ?? 0.5);
+    $("#mainIssue").value = state.prefs.mainIssue ?? "";
+  }
+
+  $("#savePrefs").addEventListener("click", () => {
+    state.prefs.caffeineCutoffHours = clamp(safeNumber($("#caffeineCutoffHours").value, 8), 6, 14);
+    state.prefs.tibBufferHours = clamp(safeNumber($("#tibBufferHours").value, 0.5), 0.3, 1.5);
+    state.prefs.mainIssue = $("#mainIssue").value || "";
+    save();
+    toast("Preferences saved");
+    renderInsights();
+  });
+
+  $("#wipeAll").addEventListener("click", () => {
+    if(confirm("Wipe everything? This cannot be undone unless you exported.")){
+      state = defaultState();
+      save();
+      location.reload();
+    }
+  });
+
+  $("#hardReload").addEventListener("click", () => location.reload());
+
+  // ---------- Demo seed ----------
+  $("#seedDemo").addEventListener("click", () => {
+    const base = new Date(todayISO() + "T00:00:00");
+    const demo = [];
+    for(let i=6;i>=0;i--){
+      const d = new Date(base.getTime() - i*86400000);
+      const tzOffset = d.getTimezoneOffset() * 60000;
+      const date = new Date(d.getTime() - tzOffset).toISOString().slice(0,10);
+      demo.push(normalizeEntry({
+        date,
+        bedTime: "23:45",
+        wakeTime: state.anchors.wakeTime || "07:00",
+        sleepHours: (6.1 + Math.random()*1.2).toFixed(1),
+        sleepLatency: [10,15,20,25,30][Math.floor(Math.random()*5)],
+        waso: [0,10,20,30][Math.floor(Math.random()*4)],
+        quality: [2,3,3,4][Math.floor(Math.random()*4)],
+        caffeineTime: ["13:30","14:00","15:00","16:00"][Math.floor(Math.random()*4)],
+        alcohol: [0,0,1,0][Math.floor(Math.random()*4)],
+        notes: "demo entry"
+      }));
+    }
+    mergeIncoming({ entries: demo });
+    save();
+    renderEntries();
+    renderInsights();
+    toast("Demo added");
+  });
+
+  $("#deleteAllEntries").addEventListener("click", () => {
+    if(confirm("Delete all diary entries?")){
+      state.entries = [];
+      save();
+      renderEntries();
+      renderInsights();
+      toast("Entries cleared");
+    }
+  });
+
+  // ---------- init ----------
+  function init(){
+    initAnchorsUI();
+    initPrefsUI();
+    renderTodayChecklist();
+    renderToolkit();
+    renderPlan();
+    renderEntries();
+    renderInsights();
+    refreshHeaderPills();
+    refreshJsonPreview();
+    // hint: bedtime derived
+    $("#entryHint").textContent = `Tip: Your current recommended bedtime (anchor-based) is ${computeBedtime()}. Don’t go to bed earlier if you're doing sleep restriction.`;
+  }
+  init();
+
+})();
+</script>
+</body>
+</html>
