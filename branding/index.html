@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Markenwerkstatt – Schnell & spielerisch</title>
+  <style>
+    :root {
+      --bg: #f5f7fc;
+      --panel: rgba(255,255,255,0.9);
+      --panel-solid: #ffffff;
+      --panel-2: #f4f7ff;
+      --text: #152133;
+      --muted: #667085;
+      --line: #dbe3f0;
+      --accent: #4158ff;
+      --accent-2: #7b61ff;
+      --accent-soft: #eef2ff;
+      --green: #16a34a;
+      --orange: #f59e0b;
+      --red: #dc2626;
+      --radius: 22px;
+      --shadow: 0 14px 40px rgba(17, 24, 39, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--text); background: linear-gradient(180deg, #f8faff 0%, #eef3ff 100%); }
+    body { min-height: 100vh; }
+    .app { max-width: 1440px; margin: 0 auto; padding: 18px; }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(65,88,255,.08), rgba(123,97,255,.08));
+      border: 1px solid rgba(219,227,240,.9);
+      box-shadow: var(--shadow);
+      border-radius: 28px;
+      padding: 24px;
+      margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: white;
+      color: #2f42b8;
+      font-weight: 800;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    h1 { margin: 14px 0 10px; font-size: clamp(30px, 5vw, 54px); line-height: 1.02; }
+    .lead { color: var(--muted); line-height: 1.55; font-size: 16px; max-width: 760px; }
+
+    .button-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    button {
+      appearance: none;
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    .primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; box-shadow: 0 10px 24px rgba(65,88,255,.24); }
+    .secondary { background: white; border: 1px solid var(--line); color: var(--text); }
+    .soft { background: var(--accent-soft); color: #2b3d94; }
+    .danger { background: #fff1f2; color: #b42318; }
+
+    .hero-side { display: grid; gap: 12px; }
+    .mini-panel {
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(219,227,240,.9);
+      border-radius: 20px;
+      padding: 16px;
+    }
+    .progress-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 10px; }
+    .progress-bar { height: 12px; border-radius: 999px; background: #dde5ff; overflow: hidden; }
+    .progress-bar > span { display:block; height:100%; width:0%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); transition: width .25s ease; }
+    .tiny { font-size: 12px; color: var(--muted); }
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .stat { background: var(--panel-2); border: 1px solid #dfe7f5; border-radius: 16px; padding: 12px; }
+    .stat strong { display:block; font-size: 22px; }
+    .stat span { font-size: 12px; color: var(--muted); }
+
+    .layout { display: grid; grid-template-columns: 290px 1fr; gap: 16px; align-items: start; }
+
+    .sidebar {
+      position: sticky;
+      top: 16px;
+      background: var(--panel);
+      border: 1px solid rgba(219,227,240,.9);
+      box-shadow: var(--shadow);
+      border-radius: 24px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+    }
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid #dbe3ff;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+    .nav { display: grid; gap: 8px; }
+    .nav a {
+      text-decoration: none;
+      color: var(--text);
+      background: transparent;
+      border: 1px solid transparent;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-weight: 700;
+      display:flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .nav a:hover, .nav a.active { background: #f5f8ff; border-color: #dbe4ff; }
+    .nav small { color: var(--muted); }
+
+    .content { display: grid; gap: 16px; }
+    .section {
+      background: var(--panel);
+      border: 1px solid rgba(219,227,240,.9);
+      box-shadow: var(--shadow);
+      border-radius: 26px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    .section-top {
+      padding: 18px 20px;
+      display:flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 1px solid #e4ebf6;
+      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(245,248,255,.92));
+    }
+    .section-top h2 { margin: 0; font-size: 24px; }
+    .section-top p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+    .section-body { padding: 18px 20px 20px; display: grid; gap: 16px; }
+    .collapsed .section-body { display: none; }
+    .toggle-btn { background: white; border: 1px solid var(--line); color: var(--text); }
+
+    .quick-grid, .grid-2, .grid-3, .grid-4 { display: grid; gap: 14px; }
+    .quick-grid { grid-template-columns: repeat(4,1fr); }
+    .grid-2 { grid-template-columns: repeat(2,1fr); }
+    .grid-3 { grid-template-columns: repeat(3,1fr); }
+    .grid-4 { grid-template-columns: repeat(4,1fr); }
+
+    .field, .cardy {
+      background: var(--panel-2);
+      border: 1px solid #e2e9f5;
+      border-radius: 18px;
+      padding: 14px;
+    }
+    .field label { display:block; font-weight: 800; margin-bottom: 8px; }
+    .field input[type="text"], .field input[type="url"], .field textarea, .field select {
+      width: 100%; border: 1px solid #d5dded; background: white; color: var(--text); border-radius: 12px; padding: 12px 13px; font: inherit;
+    }
+    .field textarea { min-height: 92px; resize: vertical; }
+    .hint { margin-top: 8px; font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+    .chips { display:flex; flex-wrap: wrap; gap: 10px; }
+    .chip, .choice, .micro-choice {
+      border: 1px solid #d5dded;
+      background: white;
+      border-radius: 999px;
+      padding: 10px 12px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .chip.selected, .choice.selected, .micro-choice.selected { background: #e8edff; border-color: #8ea3ff; color: #24378c; }
+
+    .choice-grid { display:grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    .choice-card {
+      background: linear-gradient(180deg,#ffffff,#f6f8ff);
+      border: 1px solid #dce5f4;
+      border-radius: 18px;
+      padding: 14px;
+      cursor: pointer;
+      transition: .16s ease;
+      min-height: 110px;
+    }
+    .choice-card:hover { transform: translateY(-1px); }
+    .choice-card.selected { border-color: #8ea3ff; box-shadow: inset 0 0 0 1px #8ea3ff; background: #edf2ff; }
+    .choice-card strong { display:block; margin-bottom: 6px; }
+    .choice-card span { color: var(--muted); font-size: 13px; line-height: 1.45; }
+
+    .exercise-stack { display:grid; gap: 14px; }
+    .exercise {
+      background: linear-gradient(180deg,#fcfdff,#f5f8ff);
+      border: 1px solid #e0e7f5;
+      border-radius: 20px;
+      padding: 16px;
+    }
+    .exercise-head { display:flex; justify-content: space-between; gap: 12px; align-items: start; margin-bottom: 12px; }
+    .exercise-title { font-size: 17px; font-weight: 900; }
+    .exercise-sub { color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .axis-top { display:grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items:center; font-weight: 800; margin-bottom: 8px; }
+    .axis-top .right { text-align: right; }
+    .axis-top .center { color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    .range-wrap input[type="range"] { width: 100%; accent-color: var(--accent); }
+    .examples { display:grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items:center; margin-top: 10px; }
+    .examples .pill { display:inline-flex; align-items:center; justify-content:center; padding: 8px 10px; border-radius:999px; background:white; border:1px solid #d6dfef; font-size: 12px; font-weight: 800; }
+    .axis-value { margin-top: 10px; display:inline-flex; gap:8px; align-items:center; padding: 8px 12px; border-radius:999px; background:white; border:1px solid #d6deef; font-size: 13px; font-weight: 800; }
+
+    .swatches { display:grid; grid-template-columns: repeat(5,1fr); gap: 12px; }
+    .swatch-box { height: 68px; border-radius: 14px; border: 1px solid rgba(0,0,0,.08); }
+
+    .preview-card {
+      background: linear-gradient(180deg,#ffffff,#f8faff);
+      border: 1px solid #dde5f4;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+    .brand-header { display:flex; justify-content: space-between; gap: 16px; align-items: start; margin-bottom: 18px; }
+    .brand-title { margin: 0 0 8px; font-size: 34px; font-weight: 900; }
+    .brand-sub { color: var(--muted); line-height: 1.55; }
+    .guideline-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .guideline-block { background: #f4f7ff; border: 1px solid #dce5f3; border-radius: 18px; padding: 16px; }
+    .guideline-block h3 { margin: 0 0 12px; font-size: 18px; }
+    .token-row { display:flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px dashed #d8dfeb; }
+    .token-row:last-child { border-bottom: 0; }
+    .pair { display:flex; align-items:center; gap: 10px; }
+    .mini-swatch { width: 26px; height: 26px; border-radius: 8px; border: 1px solid rgba(0,0,0,.08); }
+    .meter-list { display:grid; gap: 10px; }
+    .meter-line { display:grid; grid-template-columns: 130px 1fr 130px; gap: 10px; align-items:center; font-size: 13px; }
+    .meter { height: 10px; border-radius: 999px; background: #dfe7fb; overflow: hidden; position: relative; }
+    .meter span { position:absolute; inset:0 auto 0 0; border-radius:999px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+
+    .toast {
+      position: fixed; right: 18px; bottom: 18px; background:#111827; color:white; padding: 12px 16px; border-radius: 14px;
+      box-shadow: 0 16px 50px rgba(0,0,0,.24); opacity:0; pointer-events:none; transform:translateY(10px); transition:.22s ease; z-index:50;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 1180px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .hero { grid-template-columns: 1fr; }
+      .quick-grid, .choice-grid, .grid-4, .grid-3 { grid-template-columns: repeat(2,1fr); }
+      .guideline-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+      .app { padding: 12px; }
+      .quick-grid, .choice-grid, .grid-2, .grid-3, .grid-4, .swatches, .stats, .guideline-grid, .meter-line, .examples, .axis-top { grid-template-columns: 1fr; }
+      .brand-header { flex-direction: column; }
+      .section-top { align-items: start; }
+      h1 { font-size: 34px; }
+    }
+    @media print {
+      .hero, .sidebar, .section:not(#guideline), .toast { display: none !important; }
+      body { background: white; }
+      .app { padding: 0; max-width: none; }
+      .preview-card { box-shadow: none; border: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Markenwerkstatt · schnell ausfüllbar</div>
+        <h1>Marke festlegen in Minuten, nicht in Formularhölle.</h1>
+        <div class="lead">
+          Fokus auf das Wesentliche: viel klickbar, wenig Schreibarbeit. Erst schnell entscheiden, dann nur bei Bedarf Details ergänzen.
+        </div>
+        <div class="button-row">
+          <button class="primary" id="btnStart">Schnell starten</button>
+          <button class="soft" id="btnDemo">Beispiel laden</button>
+          <button class="secondary" id="btnExpandAll">Alles aufklappen</button>
+          <button class="secondary" id="btnCollapseAll">Details einklappen</button>
+          <button class="secondary" id="btnPrint">Guideline drucken / als PDF</button>
+        </div>
+      </div>
+      <div class="hero-side">
+        <div class="mini-panel">
+          <div class="progress-head">
+            <strong>Fortschritt</strong>
+            <span class="tiny" id="progressText">0% klar</span>
+          </div>
+          <div class="progress-bar"><span id="progressBar"></span></div>
+          <div class="tiny" style="margin-top:10px;">Alles wird automatisch im Browser gespeichert.</div>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong id="filledCount">0</strong><span>Signale gesetzt</span></div>
+          <div class="stat"><strong id="quickCount">0</strong><span>Schnellwahlen</span></div>
+          <div class="stat"><strong id="brandHealth">–</strong><span>Markenschärfe</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand-pill">⚡ <span id="sidebarBrandName">Unbenannte Marke</span></div>
+        <nav class="nav">
+          <a href="#schnellstart" class="active">Schnellstart <small>01</small></a>
+          <a href="#persoenlichkeit">Persönlichkeit <small>02</small></a>
+          <a href="#sprache">Sprache <small>03</small></a>
+          <a href="#visuell">Visuell <small>04</small></a>
+          <a href="#zielgruppe">Zielgruppe <small>05</small></a>
+          <a href="#details">Optional mehr Tiefe <small>06</small></a>
+          <a href="#guideline">Guideline <small>07</small></a>
+        </nav>
+        <div class="button-row">
+          <button class="secondary" id="btnExportJson">JSON exportieren</button>
+          <button class="secondary" id="btnImportJson">JSON importieren</button>
+          <button class="danger" id="btnReset">Zurücksetzen</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="section" id="schnellstart">
+          <div class="section-top">
+            <div>
+              <h2>Schnellstart</h2>
+              <p>Nur das Nötigste. In 60–120 Sekunden hast du schon ein brauchbares Markenprofil.</p>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="grid-2">
+              <div class="field">
+                <label for="brandName">Markenname</label>
+                <input type="text" id="brandName" placeholder="z. B. Nordlicht Energie" />
+              </div>
+              <div class="field">
+                <label for="claim">Claim / Kurzbeschreibung</label>
+                <input type="text" id="claim" placeholder="z. B. Effizienz, die sich rechnet." />
+              </div>
+            </div>
+
+            <div class="cardy">
+              <label style="display:block; font-weight:900; margin-bottom:10px;">Welche Kategorie beschreibt die Marke am besten?</label>
+              <div class="choice-grid" id="brandTypeChoices"></div>
+            </div>
+
+            <div class="cardy">
+              <label style="display:block; font-weight:900; margin-bottom:10px;">Was soll die Marke vor allem ausstrahlen?</label>
+              <div class="chips" id="firstImpressionChips"></div>
+              <div class="hint">Wähle 2–4. Das ist oft der schnellste Weg zu einer klaren Marke.</div>
+            </div>
+
+            <div class="cardy">
+              <label style="display:block; font-weight:900; margin-bottom:10px;">Markenwerte</label>
+              <div class="chips" id="valuesTags"></div>
+              <div class="hint">Nur anklicken. 3–5 Werte reichen meist völlig.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="persoenlichkeit">
+          <div class="section-top">
+            <div>
+              <h2>Persönlichkeit & Positionierung</h2>
+              <p>Viel schneller als Texte: per Klick und Regler die Marke auf echten Spannungsfeldern festlegen.</p>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="cardy">
+              <label style="display:block; font-weight:900; margin-bottom:10px;">Welche Archetypen passen am ehesten?</label>
+              <div class="choice-grid" id="archetypeChoices"></div>
+            </div>
+
+            <div class="cardy">
+              <label style="display:block; font-weight:900; margin-bottom:10px;">Wie soll die Marke im ersten Eindruck wirken?</label>
+              <div class="chips" id="energyChips"></div>
+            </div>
+
+            <div class="exercise-stack" id="axesContainer"></div>
+          </div>
+        </section>
+
+        <section class="section" id="sprache">
+          <div class="section-top">
+            <div>
+              <h2>Sprache</h2>
+              <p>Kaum tippen, viel wählen. Nur wenn du willst, gehst du in Details.</p>
+            </div>
+            <button class="toggle-btn" data-collapse-target="sprache-body">Optionales einklappen</button>
+          </div>
+          <div class="section-body" id="sprache-body">
+            <div class="cardy">
+              <label style="display:block; font-weight:900; margin-bottom:10px;">Wir klingen so</label>
+              <div class="chips" id="toneYes"></div>
+            </div>
+            <div class="cardy">
+              <label style="display:block; font-weight:900; margin-bottom:10px;">Wir klingen nicht so</label>
+              <div class="chips" id="toneNo"></div>
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="languagePrinciples">Optional: Sprachprinzipien</label>
+                <textarea id="languagePrinciples" placeholder="z. B. klar vor clever, konkret vor abstrakt"></textarea>
+              </div>
+              <div class="field">
+                <label for="headlineExamples">Optional: 2–3 Beispiel-Headlines</label>
+                <textarea id="headlineExamples" placeholder="Schreibe hier nur etwas rein, wenn du willst."></textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="visuell">
+          <div class="section-top">
+            <div>
+              <h2>Visuell</h2>
+              <p>Schnelle Klick-Entscheidungen für Logo-Richtung, Farbstimmung und Designcharakter.</p>
+            </div>
+            <button class="toggle-btn" data-collapse-target="visuell-body">Optionales einklappen</button>
+          </div>
+          <div class="section-body" id="visuell-body">
+            <div class="cardy">
+              <label style="display:block; font-weight:900; margin-bottom:10px;">Welcher Logotyp passt am ehesten?</label>
+              <div class="choice-grid" id="logoStyleChoices"></div>
+            </div>
+
+            <div class="cardy">
+              <label style="display:block; font-weight:900; margin-bottom:10px;">Welche visuelle Richtung passt?</label>
+              <div class="chips" id="visualStyleChips"></div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="fontChoice">Schrift</label>
+                <input type="text" id="fontChoice" placeholder="z. B. Inter, Outfit, IBM Plex Sans" />
+              </div>
+              <div class="field">
+                <label for="website">Webseite</label>
+                <input type="url" id="website" placeholder="https://..." />
+              </div>
+            </div>
+
+            <div class="cardy">
+              <label style="display:block; font-weight:900; margin-bottom:10px;">Farbpalette</label>
+              <div class="swatches">
+                <div><div class="swatch-box" id="swatch-primary"></div><input type="color" id="colorPrimary" value="#1d4ed8" /><div class="tiny">Primär</div></div>
+                <div><div class="swatch-box" id="swatch-secondary"></div><input type="color" id="colorSecondary" value="#f59e0b" /><div class="tiny">Sekundär</div></div>
+                <div><div class="swatch-box" id="swatch-accent"></div><input type="color" id="colorAccent" value="#7c3aed" /><div class="tiny">Akzent</div></div>
+                <div><div class="swatch-box" id="swatch-dark"></div><input type="color" id="colorDark" value="#111827" /><div class="tiny">Dunkel</div></div>
+                <div><div class="swatch-box" id="swatch-light"></div><input type="color" id="colorLight" value="#f3f4f6" /><div class="tiny">Hell</div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="zielgruppe">
+          <div class="section-top">
+            <div>
+              <h2>Zielgruppe & Nutzen</h2>
+              <p>Wieder möglichst klickbar. Nur die stärksten Aussagen markieren.</p>
+            </div>
+            <button class="toggle-btn" data-collapse-target="zielgruppe-body">Optionales einklappen</button>
+          </div>
+          <div class="section-body" id="zielgruppe-body">
+            <div class="cardy">
+              <label style="display:block; font-weight:900; margin-bottom:10px;">Für wen ist die Marke primär?</label>
+              <div class="choice-grid" id="audienceTypeChoices"></div>
+            </div>
+            <div class="cardy">
+              <label style="display:block; font-weight:900; margin-bottom:10px;">Welche Art Nutzen ist zentral?</label>
+              <div class="chips" id="benefitChips"></div>
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="problem">Optional: Kernproblem</label>
+                <textarea id="problem" placeholder="Welches Hauptproblem löst die Marke?"></textarea>
+              </div>
+              <div class="field">
+                <label for="usp">Optional: USP / Differenzierung</label>
+                <textarea id="usp" placeholder="Warum euch statt Alternative?"></textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section collapsed" id="details">
+          <div class="section-top">
+            <div>
+              <h2>Optional mehr Tiefe</h2>
+              <p>Nur aufklappen, wenn du über das Schnellprofil hinausgehen willst.</p>
+            </div>
+            <button class="toggle-btn" data-toggle-section>Aufklappen</button>
+          </div>
+          <div class="section-body">
+            <div class="grid-2">
+              <div class="field">
+                <label for="mission">Mission</label>
+                <textarea id="mission" placeholder="Warum existiert die Marke?"></textarea>
+              </div>
+              <div class="field">
+                <label for="vision">Vision</label>
+                <textarea id="vision" placeholder="Wie sieht die Welt aus, wenn die Marke gewinnt?"></textarea>
+              </div>
+              <div class="field">
+                <label for="purpose">Purpose</label>
+                <textarea id="purpose" placeholder="Wofür steht ihr über das Produkt hinaus?"></textarea>
+              </div>
+              <div class="field">
+                <label for="promise">Markenversprechen</label>
+                <textarea id="promise" placeholder="Was darf der Kunde zuverlässig erwarten?"></textarea>
+              </div>
+              <div class="field">
+                <label for="brandStory">Markengeschichte</label>
+                <textarea id="brandStory" placeholder="3–5 Sätze reichen."></textarea>
+              </div>
+              <div class="field">
+                <label for="messages">Kernbotschaften</label>
+                <textarea id="messages" placeholder="3–5 Kernbotschaften"></textarea>
+              </div>
+              <div class="field">
+                <label for="visualMotifs">Bildwelt / Motive</label>
+                <textarea id="visualMotifs" placeholder="Welche Motive passen zur Marke?"></textarea>
+              </div>
+              <div class="field">
+                <label for="designRules">Designregeln</label>
+                <textarea id="designRules" placeholder="Wichtige Do/Don'ts im Design"></textarea>
+              </div>
+              <div class="field">
+                <label for="audiencePrimary">Primäre Zielgruppe – genauer</label>
+                <textarea id="audiencePrimary" placeholder="Wenn du genauer werden willst"></textarea>
+              </div>
+              <div class="field">
+                <label for="functionalBenefits">Funktionale Nutzen</label>
+                <textarea id="functionalBenefits" placeholder="Sachliche Vorteile"></textarea>
+              </div>
+              <div class="field">
+                <label for="emotionalBenefits">Emotionale Nutzen</label>
+                <textarea id="emotionalBenefits" placeholder="Wie sollen Menschen sich fühlen?"></textarea>
+              </div>
+              <div class="field">
+                <label for="touchWeb">Wichtige Touchpoints</label>
+                <textarea id="touchWeb" placeholder="Website, Sales, E-Mail, Social, Fahrzeug, Print ..."></textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="guideline">
+          <div class="section-top">
+            <div>
+              <h2>Brand Guideline</h2>
+              <p>Die Vorschau baut sich live aus deinen Schnellentscheidungen und optionalen Details zusammen.</p>
+            </div>
+            <div class="button-row" style="margin-top:0;">
+              <button class="primary" id="btnExportHtml">HTML exportieren</button>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="preview-card" id="guidelineSheet"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <input type="file" id="importFile" accept="application/json" hidden />
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_KEY = 'branding_workshop_fast_de_v2';
+
+    const valuesPool = ['Einfachheit','Verlässlichkeit','Professionalität','Effizienz','Nähe','Innovation','Mut','Wärme','Klarheit','Transparenz','Pragmatismus','Exzellenz','Schnelligkeit','Vertrauen','Leichtigkeit','Nachhaltigkeit','Empathie','Präzision'];
+    const firstImpressionPool = ['kompetent','modern','nahbar','hochwertig','einfach','mutig','sicher','schnell','menschlich','klar','smart','vertrauenswürdig'];
+    const tonePositive = ['klar','direkt','kompetent','freundlich','pragmatisch','ruhig','nahbar','präzise','verständlich','selbstbewusst','hochwertig','hilfreich'];
+    const toneNegative = ['arrogant','schwammig','laut','aggressiv','marktschreierisch','bürokratisch','abgehoben','übertrieben trendy','belehrend','kühl','beliebig','verkopft'];
+    const energyPool = ['ruhig','souverän','energetisch','freundlich','mutig','fokussiert','warm','direkt','seriös','locker'];
+    const visualStylePool = ['minimalistisch','editorial','technisch','warm','premium','lebendig','clean','ikonisch','bold','ruhig','kontrastreich','freundlich'];
+    const benefitPool = ['Zeit sparen','Kosten senken','Sicherheit geben','Komplexität reduzieren','Status erhöhen','Vertrauen schaffen','Einfacher entscheiden','Besser aussehen','Schneller umsetzen','Mehr Kontrolle'];
+
+    const brandTypeOptions = [
+      ['Dienstleistung','Verkauft Leistung, Expertise oder Umsetzung.'],
+      ['Produktmarke','Ein physisches oder digitales Produkt steht im Zentrum.'],
+      ['Plattform / SaaS','Software, Tool, Plattform oder Operating Layer.'],
+      ['Personal Brand','Person oder Gründer ist zentraler Träger.'],
+      ['Premium / Boutique','Selektiv, hochwertig, bewusst kuratiert.'],
+      ['Massenmarkt','Breit zugänglich, klar, effizient, skalierbar.']
+    ];
+
+    const archetypes = [
+      ['Der Experte','Kompetenz, Vertrauen, Tiefe.'],
+      ['Der Vereinfacher','Macht Komplexes klar und leicht.'],
+      ['Der Pionier','Neu, mutig, vorwärts.'],
+      ['Der Partner','Nahbar, hilfreich, gemeinsam.'],
+      ['Der Qualitätsführer','Premium, präzise, souverän.'],
+      ['Der Aktivierer','Energetisch, bewegend, handlungsstark.']
+    ];
+
+    const audienceTypes = [
+      ['B2C Eigentümer','Privatkunden mit persönlicher Entscheidung.'],
+      ['B2B Entscheider','Geschäftliche Buyer mit Verantwortung.'],
+      ['SMB / Mittelstand','Pragmatisch, ROI-orientiert, schnell.'],
+      ['Enterprise','Komplexe Orgas, hoher Vertrauensbedarf.'],
+      ['Lokaler Markt','Nähe, Region, Verfügbarkeit wichtig.'],
+      ['Digital Natives','Schnell, modern, digital-first.']
+    ];
+
+    const logoStyleOptions = [
+      ['Wortmarke','Klar, direkt, name-first.'],
+      ['Wort-Bild-Marke','Name plus Symbol.'],
+      ['Monogramm','Verdichtet, prägnant, kompakt.'],
+      ['Badge / Siegel','Vertrauen, Herkunft, Handwerk.'],
+      ['Abstraktes Symbol','Modern, offen, markant.'],
+      ['Reduziert typografisch','Sehr clean, sehr digital.']
+    ];
+
+    const axes = [
+      { id:'innovativ_zuverlaessig', left:'Innovativ', right:'Zuverlässig', help:'Genau die starke Übung aus deinem Workshop: Position auf der Achse statt loses Adjektiv.', leftExample:'Tesla', rightExample:'Toyota' },
+      { id:'guenstig_premium', left:'Bezahlbar', right:'Premium', help:'Bestimmt Preisgefühl, Ton und Designniveau.', leftExample:'IKEA', rightExample:'Louis Vuitton' },
+      { id:'funktional_emotional', left:'Funktional', right:'Emotional', help:'Gewinnt die Marke eher über Nutzen oder über Gefühl?', leftExample:'Dell', rightExample:'Disney' },
+      { id:'kundenzentriert_produktzentriert', left:'Kundenzentriert', right:'Produktzentriert', help:'Steuert Storytelling und UX-Fokus.', leftExample:'Amazon', rightExample:'Microsoft' },
+      { id:'lokal_global', left:'Lokal', right:'Global', help:'Nähe und Verwurzelung vs. große Bühne und Skalierung.', leftExample:'Blue Bottle Coffee', rightExample:'McDonald’s' },
+      { id:'spielerisch_ernst', left:'Spielerisch', right:'Ernst', help:'Hilft extrem schnell beim Sprachgefühl.', leftExample:'LEGO', rightExample:'Goldman Sachs' },
+      { id:'tech_traditionell', left:'Tech-Savvy', right:'Traditionell', help:'Beeinflusst Codes, Bildwelt und Vertrauen.', leftExample:'Apple', rightExample:'Coca-Cola' },
+      { id:'rebellisch_konform', left:'Rebellisch', right:'Konform', help:'Attackiert die Marke Muster oder beruhigt sie?', leftExample:'Liquid Death', rightExample:'Allianz' }
+    ];
+
+    const defaultState = {
+      brandName:'', claim:'', website:'', mission:'', vision:'', purpose:'', promise:'', problem:'', usp:'', brandStory:'', languagePrinciples:'', headlineExamples:'', fontChoice:'', visualMotifs:'', designRules:'', audiencePrimary:'', functionalBenefits:'', emotionalBenefits:'', messages:'', touchWeb:'',
+      brandType:'', archetypes:[], audienceType:'', logoStyle:'',
+      firstImpressions:[], values:[], toneYes:[], toneNo:[], energy:[], visualStyles:[], benefits:[],
+      colorPrimary:'#1d4ed8', colorSecondary:'#f59e0b', colorAccent:'#7c3aed', colorDark:'#111827', colorLight:'#f3f4f6',
+      axes: Object.fromEntries(axes.map(a => [a.id, 50]))
+    };
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return structuredClone(defaultState);
+        const parsed = JSON.parse(raw);
+        return { ...structuredClone(defaultState), ...parsed, axes: { ...structuredClone(defaultState).axes, ...(parsed.axes || {}) } };
+      } catch {
+        return structuredClone(defaultState);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      renderGuideline();
+      renderProgress();
+      syncBrandName();
+      updateSwatches();
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    function bindFields() {
+      ['brandName','claim','website','mission','vision','purpose','promise','problem','usp','brandStory','languagePrinciples','headlineExamples','fontChoice','visualMotifs','designRules','audiencePrimary','functionalBenefits','emotionalBenefits','messages','touchWeb'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.value = state[id] || '';
+        el.addEventListener('input', e => { state[id] = e.target.value; saveState(); });
+      });
+      ['colorPrimary','colorSecondary','colorAccent','colorDark','colorLight'].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = state[id];
+        el.addEventListener('input', e => { state[id] = e.target.value; saveState(); });
+      });
+    }
+
+    function renderChoiceCards(containerId, options, key, multi = false) {
+      const wrap = document.getElementById(containerId);
+      wrap.innerHTML = '';
+      options.forEach(([title, desc]) => {
+        const el = document.createElement('div');
+        const active = multi ? (state[key] || []).includes(title) : state[key] === title;
+        el.className = 'choice-card' + (active ? ' selected' : '');
+        el.innerHTML = `<strong>${title}</strong><span>${desc}</span>`;
+        el.addEventListener('click', () => {
+          if (multi) {
+            const set = new Set(state[key] || []);
+            if (set.has(title)) set.delete(title); else set.add(title);
+            state[key] = [...set];
+          } else {
+            state[key] = state[key] === title ? '' : title;
+          }
+          renderAllChoices();
+          saveState();
+        });
+        wrap.appendChild(el);
+      });
+    }
+
+    function renderChipGroup(containerId, pool, key, limit = null) {
+      const wrap = document.getElementById(containerId);
+      wrap.innerHTML = '';
+      pool.forEach(item => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'chip' + ((state[key] || []).includes(item) ? ' selected' : '');
+        b.textContent = item;
+        b.addEventListener('click', () => {
+          const set = new Set(state[key] || []);
+          if (set.has(item)) set.delete(item);
+          else {
+            if (limit && set.size >= limit) {
+              showToast(`Maximal ${limit} auswählen`);
+              return;
+            }
+            set.add(item);
+          }
+          state[key] = [...set];
+          renderAllChoices();
+          saveState();
+        });
+        wrap.appendChild(b);
+      });
+    }
+
+    function renderAllChoices() {
+      renderChoiceCards('brandTypeChoices', brandTypeOptions, 'brandType', false);
+      renderChoiceCards('archetypeChoices', archetypes, 'archetypes', true);
+      renderChoiceCards('audienceTypeChoices', audienceTypes, 'audienceType', false);
+      renderChoiceCards('logoStyleChoices', logoStyleOptions, 'logoStyle', false);
+      renderChipGroup('firstImpressionChips', firstImpressionPool, 'firstImpressions', 4);
+      renderChipGroup('valuesTags', valuesPool, 'values', 5);
+      renderChipGroup('toneYes', tonePositive, 'toneYes', 6);
+      renderChipGroup('toneNo', toneNegative, 'toneNo', 6);
+      renderChipGroup('energyChips', energyPool, 'energy', 4);
+      renderChipGroup('visualStyleChips', visualStylePool, 'visualStyles', 5);
+      renderChipGroup('benefitChips', benefitPool, 'benefits', 4);
+    }
+
+    function renderAxes() {
+      const wrap = document.getElementById('axesContainer');
+      wrap.innerHTML = '';
+      axes.forEach(axis => {
+        const value = state.axes[axis.id] ?? 50;
+        const el = document.createElement('div');
+        el.className = 'exercise';
+        el.innerHTML = `
+          <div class="exercise-head">
+            <div>
+              <div class="exercise-title">${axis.left} vs. ${axis.right}</div>
+              <div class="exercise-sub">${axis.help}</div>
+            </div>
+          </div>
+          <div class="axis-top">
+            <div>${axis.left}</div>
+            <div class="center">Position</div>
+            <div class="right">${axis.right}</div>
+          </div>
+          <div class="range-wrap">
+            <input type="range" min="0" max="100" step="1" value="${value}" data-axis="${axis.id}" />
+          </div>
+          <div class="examples">
+            <div><span class="pill">${axis.leftExample}</span></div>
+            <div class="tiny">← Beispielmarken →</div>
+            <div style="text-align:right;"><span class="pill">${axis.rightExample}</span></div>
+          </div>
+          <div class="axis-value" id="label-${axis.id}">${describeAxis(axis, value)}</div>
+        `;
+        wrap.appendChild(el);
+      });
+      wrap.querySelectorAll('input[type="range"]').forEach(range => {
+        range.addEventListener('input', e => {
+          const id = e.target.dataset.axis;
+          state.axes[id] = Number(e.target.value);
+          document.getElementById('label-' + id).textContent = describeAxis(axes.find(a => a.id === id), Number(e.target.value));
+          saveState();
+        });
+      });
+    }
+
+    function describeAxis(axis, value) {
+      if (value < 15) return `Sehr klar ${axis.left}`;
+      if (value < 35) return `Eher ${axis.left}`;
+      if (value <= 65) return 'Bewusst ausgewogen';
+      if (value <= 85) return `Eher ${axis.right}`;
+      return `Sehr klar ${axis.right}`;
+    }
+
+    function updateSwatches() {
+      [['primary',state.colorPrimary],['secondary',state.colorSecondary],['accent',state.colorAccent],['dark',state.colorDark],['light',state.colorLight]].forEach(([name,val]) => {
+        const el = document.getElementById('swatch-' + name);
+        if (el) el.style.background = val;
+      });
+    }
+
+    function syncBrandName() {
+      document.getElementById('sidebarBrandName').textContent = state.brandName?.trim() || 'Unbenannte Marke';
+    }
+
+    function renderProgress() {
+      const scalar = ['brandName','claim','brandType','audienceType','logoStyle','website','mission','vision','purpose','promise','problem','usp','brandStory','languagePrinciples','headlineExamples','fontChoice','visualMotifs','designRules','audiencePrimary','functionalBenefits','emotionalBenefits','messages','touchWeb'];
+      const arrays = ['firstImpressions','values','toneYes','toneNo','energy','visualStyles','benefits','archetypes'];
+      let filled = scalar.filter(k => String(state[k] || '').trim()).length;
+      filled += arrays.filter(k => (state[k] || []).length).length;
+      filled += Object.values(state.axes).filter(v => v !== 50).length;
+      const total = scalar.length + arrays.length + axes.length;
+      const pct = Math.round((filled / total) * 100);
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('progressText').textContent = pct + '% klar';
+      document.getElementById('filledCount').textContent = filled;
+      const quickCount = (state.firstImpressions || []).length + (state.values || []).length + (state.toneYes || []).length + (state.energy || []).length + (state.visualStyles || []).length + (state.benefits || []).length + (state.archetypes || []).length;
+      document.getElementById('quickCount').textContent = quickCount;
+      document.getElementById('brandHealth').textContent = pct >= 75 ? 'stark' : pct >= 45 ? 'gut' : 'roh';
+    }
+
+    function axisPercent(v) { return Math.max(4, Number(v || 50)); }
+    function chipsHtml(list) { return list && list.length ? `<div class="chips">${list.map(x => `<span class="chip selected">${x}</span>`).join('')}</div>` : '<div class="tiny">Noch offen</div>'; }
+
+    function renderGuideline() {
+      const name = state.brandName?.trim() || 'Unbenannte Marke';
+      const axisHtml = axes.map(axis => `
+        <div class="meter-line">
+          <div>${axis.left}</div>
+          <div class="meter"><span style="width:${axisPercent(state.axes[axis.id])}%"></span></div>
+          <div style="text-align:right;">${axis.right}</div>
+        </div>
+      `).join('');
+
+      const colors = [
+        ['Primär', state.colorPrimary], ['Sekundär', state.colorSecondary], ['Akzent', state.colorAccent], ['Dunkel', state.colorDark], ['Hell', state.colorLight]
+      ].map(([label, value]) => `
+        <div class="token-row"><div class="pair"><span class="mini-swatch" style="background:${value}"></span><strong>${label}</strong></div><div class="tiny">${value}</div></div>
+      `).join('');
+
+      document.getElementById('guidelineSheet').innerHTML = `
+        <div class="brand-header">
+          <div>
+            <div class="eyebrow">Brand Guideline</div>
+            <h3 class="brand-title">${name}</h3>
+            <div class="brand-sub">${state.claim || 'Noch kein Claim definiert.'}</div>
+          </div>
+          <div class="guideline-block" style="min-width:280px;">
+            <div class="token-row"><strong>Markentyp</strong><span>${state.brandType || '–'}</span></div>
+            <div class="token-row"><strong>Zielgruppe</strong><span>${state.audienceType || '–'}</span></div>
+            <div class="token-row"><strong>Logostil</strong><span>${state.logoStyle || '–'}</span></div>
+            <div class="token-row"><strong>Schrift</strong><span>${state.fontChoice || '–'}</span></div>
+          </div>
+        </div>
+
+        <div class="guideline-grid">
+          <div class="guideline-block">
+            <h3>Schnellprofil</h3>
+            <div class="token-row"><strong>Erster Eindruck</strong><span>${(state.firstImpressions || []).join(' · ') || '–'}</span></div>
+            <div class="token-row"><strong>Archetypen</strong><span>${(state.archetypes || []).join(' · ') || '–'}</span></div>
+            <div class="token-row"><strong>Markenwerte</strong><span>${(state.values || []).join(' · ') || '–'}</span></div>
+            <div class="token-row"><strong>Energie</strong><span>${(state.energy || []).join(' · ') || '–'}</span></div>
+            <div class="token-row"><strong>Nutzenfokus</strong><span>${(state.benefits || []).join(' · ') || '–'}</span></div>
+          </div>
+
+          <div class="guideline-block">
+            <h3>Positionierung</h3>
+            <div class="meter-list">${axisHtml}</div>
+          </div>
+
+          <div class="guideline-block">
+            <h3>Sprache</h3>
+            <div class="token-row"><strong>Wir klingen so</strong><span>${(state.toneYes || []).join(' · ') || '–'}</span></div>
+            <div class="token-row"><strong>Nicht so</strong><span>${(state.toneNo || []).join(' · ') || '–'}</span></div>
+            <div class="token-row"><strong>Sprachprinzipien</strong><span>${state.languagePrinciples || '–'}</span></div>
+            <div class="token-row"><strong>Beispiel-Headlines</strong><span>${state.headlineExamples || '–'}</span></div>
+          </div>
+
+          <div class="guideline-block">
+            <h3>Visuelle Richtung</h3>
+            ${colors}
+            <div class="token-row"><strong>Visuelle Stilwörter</strong><span>${(state.visualStyles || []).join(' · ') || '–'}</span></div>
+            <div class="token-row"><strong>Bildwelt</strong><span>${state.visualMotifs || '–'}</span></div>
+            <div class="token-row"><strong>Designregeln</strong><span>${state.designRules || '–'}</span></div>
+          </div>
+
+          <div class="guideline-block">
+            <h3>Zielgruppe & Nutzen</h3>
+            <div class="token-row"><strong>Zielgruppen-Typ</strong><span>${state.audienceType || '–'}</span></div>
+            <div class="token-row"><strong>Kernproblem</strong><span>${state.problem || '–'}</span></div>
+            <div class="token-row"><strong>USP</strong><span>${state.usp || '–'}</span></div>
+            <div class="token-row"><strong>Mission</strong><span>${state.mission || '–'}</span></div>
+            <div class="token-row"><strong>Versprechen</strong><span>${state.promise || '–'}</span></div>
+          </div>
+
+          <div class="guideline-block">
+            <h3>Optionale Tiefe</h3>
+            <div class="token-row"><strong>Vision</strong><span>${state.vision || '–'}</span></div>
+            <div class="token-row"><strong>Purpose</strong><span>${state.purpose || '–'}</span></div>
+            <div class="token-row"><strong>Markengeschichte</strong><span>${state.brandStory || '–'}</span></div>
+            <div class="token-row"><strong>Kernbotschaften</strong><span>${state.messages || '–'}</span></div>
+            <div class="token-row"><strong>Touchpoints</strong><span>${state.touchWeb || '–'}</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function exportJson() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      downloadBlob(blob, `${slugify(state.brandName || 'marke')}-brand-workshop.json`);
+      showToast('JSON exportiert');
+    }
+
+    function exportHtmlGuideline() {
+      const name = state.brandName?.trim() || 'Unbenannte Marke';
+      const html = `<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(name)} – Brand Guideline</title><style>body{font-family:Inter,Arial,sans-serif;background:#f5f7fb;color:#132033;padding:32px}.wrap{max-width:1100px;margin:0 auto}.preview-card{background:#fff;border:1px solid #dce3f0;border-radius:22px;padding:24px;box-shadow:0 8px 28px rgba(0,0,0,.06)}.eyebrow{display:inline-block;padding:6px 10px;background:#eef2ff;border-radius:999px;color:#3241be;font-weight:800;font-size:12px;text-transform:uppercase}.brand-title{font-size:38px;font-weight:900;margin:14px 0 8px}.brand-sub{color:#667085;line-height:1.5}.guideline-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.guideline-block{background:#f4f7ff;border:1px solid #dce5f3;border-radius:18px;padding:16px}.guideline-block h3{margin:0 0 12px}.token-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #d8dfeb}.token-row:last-child{border-bottom:0}.pair{display:flex;align-items:center;gap:10px}.mini-swatch{width:26px;height:26px;border-radius:8px;border:1px solid rgba(0,0,0,.08);display:inline-block}.meter-list{display:grid;gap:10px}.meter-line{display:grid;grid-template-columns:130px 1fr 130px;gap:10px;align-items:center;font-size:13px}.meter{height:10px;border-radius:999px;background:#dfe7fb;overflow:hidden}.meter span{display:block;height:100%;background:linear-gradient(135deg,#4158ff,#7b61ff)}@media(max-width:800px){.guideline-grid,.meter-line{grid-template-columns:1fr}.brand-title{font-size:30px}}</style></head><body><div class="wrap">${document.getElementById('guidelineSheet').outerHTML}</div></body></html>`;
+      const blob = new Blob([html], { type: 'text/html' });
+      downloadBlob(blob, `${slugify(name)}-brand-guideline.html`);
+      showToast('HTML exportiert');
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 500);
+    }
+
+    function slugify(text) { return text.toLowerCase().trim().replace(/[^a-z0-9äöüß]+/gi,'-').replace(/^-+|-+$/g,''); }
+    function escapeHtml(str) { return String(str).replace(/[&<>\"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s])); }
+
+    function importJson(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          state = { ...structuredClone(defaultState), ...parsed, axes: { ...structuredClone(defaultState).axes, ...(parsed.axes || {}) } };
+          hydrateUI();
+          saveState();
+          showToast('JSON importiert');
+        } catch {
+          alert('Ungültige JSON-Datei.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function hydrateUI() {
+      bindFields();
+      renderAllChoices();
+      renderAxes();
+      updateSwatches();
+      syncBrandName();
+      renderGuideline();
+      renderProgress();
+    }
+
+    function loadDemo() {
+      state = {
+        ...structuredClone(defaultState),
+        brandName: 'Einfach-Dämmen',
+        claim: 'Einfach sanieren. Klug sparen.',
+        website: 'https://www.einfach-daemmen.de',
+        brandType: 'Dienstleistung',
+        archetypes: ['Der Vereinfacher','Der Experte'],
+        audienceType: 'B2C Eigentümer',
+        logoStyle: 'Wort-Bild-Marke',
+        firstImpressions: ['kompetent','einfach','vertrauenswürdig','klar'],
+        values: ['Einfachheit','Verlässlichkeit','Effizienz','Professionalität'],
+        toneYes: ['klar','kompetent','freundlich','verständlich'],
+        toneNo: ['arrogant','schwammig','marktschreierisch'],
+        energy: ['souverän','freundlich','direkt'],
+        visualStyles: ['clean','warm','kontrastreich','technisch'],
+        benefits: ['Kosten senken','Sicherheit geben','Komplexität reduzieren','Einfacher entscheiden'],
+        fontChoice: 'Outfit',
+        colorPrimary: '#152c53',
+        colorSecondary: '#efc94b',
+        colorAccent: '#8b8f96',
+        colorDark: '#101828',
+        colorLight: '#f4f5f7',
+        problem: 'Eigentümer verlieren sich in Förderlogik, Technikoptionen und Umsetzungschaos.',
+        usp: 'Technisch solide, menschlich verständlich und operativ sauber.',
+        mission: 'Wir machen energetische Modernisierung radikal verständlich und machbar.',
+        promise: 'Klare Empfehlung, strukturierter Ablauf, saubere Umsetzung.',
+        languagePrinciples: 'Klar vor clever. Konkret vor abstrakt. Aktiv statt passiv.',
+        headlineExamples: 'Sanierung, die man endlich versteht.\nIhr nächster sinnvoller Schritt.\nMehr Effizienz, weniger Reibung.',
+        visualMotifs: 'Echte Häuser, reale Menschen, Material, Nahaufnahmen, klare Vorher-Nachher-Logik.',
+        designRules: 'Viel Weißraum, echte Bilder, starke Kontraste, einfache Grafiken.',
+        axes: {
+          innovativ_zuverlaessig: 74,
+          guenstig_premium: 36,
+          funktional_emotional: 30,
+          kundenzentriert_produktzentriert: 22,
+          lokal_global: 18,
+          spielerisch_ernst: 69,
+          tech_traditionell: 40,
+          rebellisch_konform: 46
+        }
+      };
+      hydrateUI();
+      saveState();
+      showToast('Beispiel geladen');
+    }
+
+    function attachActions() {
+      document.getElementById('btnStart').addEventListener('click', () => document.getElementById('schnellstart').scrollIntoView({ behavior:'smooth' }));
+      document.getElementById('btnDemo').addEventListener('click', loadDemo);
+      document.getElementById('btnPrint').addEventListener('click', () => window.print());
+      document.getElementById('btnExportJson').addEventListener('click', exportJson);
+      document.getElementById('btnExportHtml').addEventListener('click', exportHtmlGuideline);
+      document.getElementById('btnImportJson').addEventListener('click', () => document.getElementById('importFile').click());
+      document.getElementById('importFile').addEventListener('change', e => {
+        const file = e.target.files?.[0];
+        if (file) importJson(file);
+        e.target.value = '';
+      });
+      document.getElementById('btnReset').addEventListener('click', () => {
+        if (!confirm('Wirklich alles zurücksetzen?')) return;
+        state = structuredClone(defaultState);
+        localStorage.removeItem(STORAGE_KEY);
+        hydrateUI();
+        saveState();
+        showToast('Zurückgesetzt');
+      });
+      document.getElementById('btnExpandAll').addEventListener('click', () => {
+        document.querySelectorAll('.section.collapsed').forEach(el => el.classList.remove('collapsed'));
+        document.querySelectorAll('[data-toggle-section]').forEach(btn => btn.textContent = 'Einklappen');
+      });
+      document.getElementById('btnCollapseAll').addEventListener('click', () => {
+        document.querySelectorAll('#details').forEach(el => el.classList.add('collapsed'));
+        document.querySelectorAll('[data-toggle-section]').forEach(btn => btn.textContent = 'Aufklappen');
+      });
+
+      document.querySelectorAll('[data-toggle-section]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const section = btn.closest('.section');
+          section.classList.toggle('collapsed');
+          btn.textContent = section.classList.contains('collapsed') ? 'Aufklappen' : 'Einklappen';
+        });
+      });
+      document.querySelectorAll('[data-collapse-target]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const body = document.getElementById(btn.dataset.collapseTarget);
+          if (!body) return;
+          body.style.display = body.style.display === 'none' ? 'grid' : 'none';
+          btn.textContent = body.style.display === 'none' ? 'Optionales aufklappen' : 'Optionales einklappen';
+        });
+      });
+
+      document.querySelectorAll('.nav a').forEach(a => {
+        a.addEventListener('click', () => {
+          document.querySelectorAll('.nav a').forEach(x => x.classList.remove('active'));
+          a.classList.add('active');
+        });
+      });
+    }
+
+    hydrateUI();
+    attachActions();
+  </script>
+</body>
+</html>
