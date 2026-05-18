@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { Baby, Download, Heart, Import, RotateCcw, Search, Sparkles, Star, Trophy, Upload } from 'lucide-react';
+import { React, ReactDOM, html, lucide } from './deps.js';
 import { NAMES } from './names.js';
-import './styles.css';
+
+const { useState, useEffect, useMemo, useCallback, useRef } = React;
+const { Baby, Download, Heart, Import, RotateCcw, Search, Sparkles, Trophy, Upload } = lucide;
 
 const STORAGE_KEY = 'baby-name-tinder:v1';
 const ACTIONS = {
@@ -26,9 +26,7 @@ function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? { ...defaultState, ...JSON.parse(raw) } : defaultState;
-  } catch {
-    return defaultState;
-  }
+  } catch { return defaultState; }
 }
 
 function saveState(state) {
@@ -121,7 +119,6 @@ function App() {
     }
   }, [currentName, ratedCount]);
 
-  // Keyboard shortcuts for swiping
   useEffect(() => {
     if (tab !== 'swipe') return;
     function handleKey(e) {
@@ -164,9 +161,7 @@ function App() {
         setPartnerData(data);
         setTab('match');
         setToast(`✅ Partner-Datei importiert: ${data.userName || 'Partner'}`);
-      } catch {
-        setToast('❌ JSON konnte nicht gelesen werden.');
-      }
+      } catch { setToast('❌ JSON konnte nicht gelesen werden.'); }
     };
     reader.readAsText(file);
     event.target.value = '';
@@ -180,71 +175,71 @@ function App() {
     setToast('🗑️ Alles zurückgesetzt.');
   }
 
-  return (
+  return html`
     <main className="app">
       <header className="topbar">
         <div className="brand">
-          <Baby size={24} strokeWidth={2.5} />
+          <${Baby} size=${24} strokeWidth=${2.5} />
           <span>Baby Name Tinder</span>
         </div>
-        <button className="ghost" onClick={resetAll} title="Alle Bewertungen zurücksetzen" aria-label="Zurücksetzen">
-          <RotateCcw size={18} />
+        <button className="ghost" onClick=${resetAll} title="Alle Bewertungen zurücksetzen" aria-label="Zurücksetzen">
+          <${RotateCcw} size=${18} />
         </button>
       </header>
 
       <nav className="tabs" role="tablist" aria-label="Hauptnavigation">
-        <button role="tab" aria-selected={tab === 'swipe'} className={tab === 'swipe' ? 'active' : ''} onClick={() => setTab('swipe')}>
+        <button role="tab" aria-selected=${tab === 'swipe'} className=${tab === 'swipe' ? 'active' : ''} onClick=${() => setTab('swipe')}>
           Swipen
         </button>
-        <button role="tab" aria-selected={tab === 'favorites'} className={tab === 'favorites' ? 'active' : ''} onClick={() => setTab('favorites')}>
+        <button role="tab" aria-selected=${tab === 'favorites'} className=${tab === 'favorites' ? 'active' : ''} onClick=${() => setTab('favorites')}>
           Favoriten
         </button>
-        <button role="tab" aria-selected={tab === 'match'} className={tab === 'match' ? 'active' : ''} onClick={() => setTab('match')}>
+        <button role="tab" aria-selected=${tab === 'match'} className=${tab === 'match' ? 'active' : ''} onClick=${() => setTab('match')}>
           Matching
         </button>
       </nav>
 
-      {tab === 'swipe' && (
+      ${tab === 'swipe' && html`
         <section className="screen" role="tabpanel" aria-label="Swipen">
           <div className="settings-card">
             <label htmlFor="user-name">Dein Name</label>
             <input
               id="user-name"
-              value={state.userName}
-              onChange={(e) => setState({ ...state, userName: e.target.value })}
+              value=${state.userName}
+              onChange=${(e) => setState({ ...state, userName: e.target.value })}
               placeholder="z. B. Marlon"
             />
             <label htmlFor="name-filter">Namensfilter</label>
-            <select id="name-filter" value={state.filter} onChange={(e) => setState({ ...state, filter: e.target.value })}>
+            <select id="name-filter" value=${state.filter} onChange=${(e) => setState({ ...state, filter: e.target.value })}>
               <option value="all">Alle Namen</option>
               <option value="female">Mädchen</option>
               <option value="male">Jungen</option>
               <option value="unisex">Unisex</option>
             </select>
             <label htmlFor="session-goal">Session-Ziel</label>
-            <select id="session-goal" value={state.sessionGoal} onChange={(e) => setState({ ...state, sessionGoal: Number(e.target.value) })}>
-              <option value={10}>10 Namen</option>
-              <option value={25}>25 Namen</option>
-              <option value={50}>50 Namen</option>
+            <select id="session-goal" value=${state.sessionGoal} onChange=${(e) => setState({ ...state, sessionGoal: Number(e.target.value) })}>
+              <option value=${10}>10 Namen</option>
+              <option value=${25}>25 Namen</option>
+              <option value=${50}>50 Namen</option>
             </select>
           </div>
 
-          <Progress ratedCount={ratedCount} total={total} sessionProgress={sessionProgress} nextMilestone={nextMilestone} />
+          <${Progress} ratedCount=${ratedCount} total=${total} sessionProgress=${sessionProgress} nextMilestone=${nextMilestone} />
 
-          {currentName ? <NameCard key={cardKey} name={currentName} /> : <EmptyDeck />}
+          ${currentName ? html`<${NameCard} key=${cardKey} name=${currentName} />` : html`<${EmptyDeck} />`}
 
           <div className="action-grid" role="group" aria-label="Bewertungsoptionen">
-            <button className="no" onClick={() => rateCurrent(0)} aria-label="Nein – Name ablehnen">
-              {ACTIONS.no.emoji}<span>Nein</span>
+            <button className="no" onClick=${() => rateCurrent(0)} aria-label="Nein – Name ablehnen">
+              ${ACTIONS.no.emoji}<span>Nein</span>
             </button>
-            <button className="like" onClick={() => rateCurrent(1)} aria-label="Like – Name merken">
-              {ACTIONS.like.emoji}<span>Like</span>
+            <button className="like" onClick=${() => rateCurrent(1)} aria-label="Like – Name merken">
+              ${ACTIONS.like.emoji}<span>Like</span>
             </button>
-            <button className="super" onClick={() => rateCurrent(2)} aria-label="Super Like">
-              {ACTIONS.super.emoji}<span>Super</span>
+            <button className="super" onClick=${() => rateCurrent(2)} aria-label="Super Like">
+              ${ACTIONS.super.emoji}<span>Super</span>
             </button>
-            <button className="duper" onClick={() => rateCurrent(3)} aria-label="Perfekt – Lieblingsname">
-              {ACTIONS.duper.emoji}<span>Perfekt</span>
+            <button className="duper" onClick=${() => rateCurrent(3)} aria-label="Perfekt – Lieblingsname">
+              ${ACTIONS.duper.emoji}<span>Perfekt</span>
             </button>
           </div>
 
@@ -255,139 +250,123 @@ function App() {
             <span><kbd>4</kbd>Perfekt</span>
           </div>
         </section>
-      )}
+      `}
 
-      {tab === 'favorites' && (
+      ${tab === 'favorites' && html`
         <section className="screen" role="tabpanel" aria-label="Favoriten">
-          <Stats state={state} total={total} />
+          <${Stats} state=${state} total=${total} />
           <div className="toolbar">
-            <button onClick={exportJson} aria-label="Bewertungen als JSON exportieren">
-              <Download size={18} /> Exportieren
+            <button onClick=${exportJson} aria-label="Bewertungen als JSON exportieren">
+              <${Download} size=${18} /> Exportieren
             </button>
-            <button onClick={() => fileInputRef.current.click()} aria-label="Partner-JSON importieren">
-              <Upload size={18} /> Importieren
+            <button onClick=${() => fileInputRef.current.click()} aria-label="Partner-JSON importieren">
+              <${Upload} size=${18} /> Importieren
             </button>
-            <input hidden type="file" accept="application/json" ref={fileInputRef} onChange={importJson} aria-hidden="true" />
+            <input hidden type="file" accept="application/json" ref=${fileInputRef} onChange=${importJson} aria-hidden="true" />
           </div>
-          <h2>Deine Favoriten ({likedNames.length})</h2>
-          <NameList names={likedNames} ratings={state.ratings} />
+          <h2>Deine Favoriten (${likedNames.length})</h2>
+          <${NameList} names=${likedNames} ratings=${state.ratings} />
         </section>
-      )}
+      `}
 
-      {tab === 'match' && (
+      ${tab === 'match' && html`
         <section className="screen" role="tabpanel" aria-label="Matching">
-          {!partnerData ? (
+          ${!partnerData ? html`
             <div className="empty-state">
-              <Import size={38} strokeWidth={1.5} />
+              <${Import} size=${38} strokeWidth=${1.5} />
               <h2>Partner-Datei importieren</h2>
               <p>Exportiere zuerst deine Bewertungen und importiere dann die JSON-Datei deines Partners, um gemeinsame Favoriten zu finden.</p>
-              <button onClick={() => fileInputRef.current.click()}>
-                <Upload size={18} /> JSON importieren
+              <button onClick=${() => fileInputRef.current.click()}>
+                <${Upload} size=${18} /> JSON importieren
               </button>
-              <input hidden type="file" accept="application/json" ref={fileInputRef} onChange={importJson} aria-hidden="true" />
+              <input hidden type="file" accept="application/json" ref=${fileInputRef} onChange=${importJson} aria-hidden="true" />
             </div>
-          ) : (
-            <Matching own={state} partner={partnerData} />
-          )}
+          ` : html`<${Matching} own=${state} partner=${partnerData} />`}
         </section>
-      )}
+      `}
 
-      {toast && <div className="toast" role="status" aria-live="polite">{toast}</div>}
+      ${toast && html`<div className="toast" role="status" aria-live="polite">${toast}</div>`}
     </main>
-  );
+  `;
 }
 
 function Progress({ ratedCount, total, sessionProgress, nextMilestone }) {
   const percent = Math.round((ratedCount / total) * 100);
-  return (
+  return html`
     <div className="progress-card" role="region" aria-label="Fortschritt">
       <div className="progress-top">
-        <span>{ratedCount} von {total} geschafft</span>
-        <strong>Noch {Math.max(0, nextMilestone - ratedCount)} bis {nextMilestone}</strong>
+        <span>${ratedCount} von ${total} geschafft</span>
+        <strong>Noch ${Math.max(0, nextMilestone - ratedCount)} bis ${nextMilestone}</strong>
       </div>
-      <div className="bar" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
-        <span style={{ width: `${percent}%` }} />
+      <div className="bar" role="progressbar" aria-valuenow=${percent} aria-valuemin=${0} aria-valuemax=${100}>
+        <span style=${{ width: `${percent}%` }} />
       </div>
       <div className="session-row">
-        <Trophy size={17} />
-        <span>Session-Fortschritt: {sessionProgress}%</span>
+        <${Trophy} size=${17} />
+        <span>Session-Fortschritt: ${sessionProgress}%</span>
       </div>
     </div>
-  );
+  `;
 }
 
 function NameCard({ name }) {
-  return (
-    <article className="name-card" aria-label={`Name: ${name.name}`}>
-      <div className="pill">{getGenderLabel(name.gender)}</div>
-      <h1>{name.name}</h1>
-      <p>{name.origin.join(' · ')}</p>
+  return html`
+    <article className="name-card" aria-label=${`Name: ${name.name}`}>
+      <div className="pill">${getGenderLabel(name.gender)}</div>
+      <h1>${name.name}</h1>
+      <p>${name.origin.join(' · ')}</p>
       <div className="tags" aria-label="Eigenschaften">
-        {[...name.style.slice(0, 4), name.rarity, name.length].map((x) => (
-          <span key={x}>{x}</span>
-        ))}
+        ${[...name.style.slice(0, 4), name.rarity, name.length].map((x) => html`<span key=${x}>${x}</span>`)}
       </div>
       <div className="external-links">
-        <a href={googleUrl(name.name)} target="_blank" rel="noreferrer" aria-label={`${name.name} bei Google suchen`}>
-          <Search size={16} /> Google
+        <a href=${googleUrl(name.name)} target="_blank" rel="noreferrer" aria-label=${`${name.name} bei Google suchen`}>
+          <${Search} size=${16} /> Google
         </a>
-        <a href={chatGptUrl(name.name)} target="_blank" rel="noreferrer" aria-label={`${name.name} bei ChatGPT nachfragen`}>
-          <Sparkles size={16} /> ChatGPT
+        <a href=${chatGptUrl(name.name)} target="_blank" rel="noreferrer" aria-label=${`${name.name} bei ChatGPT nachfragen`}>
+          <${Sparkles} size=${16} /> ChatGPT
         </a>
       </div>
     </article>
-  );
+  `;
 }
 
 function EmptyDeck() {
-  return (
+  return html`
     <div className="empty-state">
-      <Heart size={44} strokeWidth={1.5} />
+      <${Heart} size=${44} strokeWidth=${1.5} />
       <h2>Alle Namen bewertet 🎉</h2>
       <p>Super gemacht! Exportiere jetzt deine Datei und vergleiche sie mit deinem Partner.</p>
     </div>
-  );
+  `;
 }
 
 function Stats({ state, total }) {
   const scores = Object.values(state.ratings);
-  return (
+  return html`
     <div className="stats-grid" role="region" aria-label="Statistiken">
-      <div>
-        <strong>{scores.length}</strong>
-        <span>bewertet</span>
-      </div>
-      <div>
-        <strong>{scores.filter((x) => x > 0).length}</strong>
-        <span>Likes</span>
-      </div>
-      <div>
-        <strong>{scores.filter((x) => x === 3).length}</strong>
-        <span>Perfekt</span>
-      </div>
-      <div>
-        <strong>{total - scores.length}</strong>
-        <span>offen</span>
-      </div>
+      <div><strong>${scores.length}</strong><span>bewertet</span></div>
+      <div><strong>${scores.filter((x) => x > 0).length}</strong><span>Likes</span></div>
+      <div><strong>${scores.filter((x) => x === 3).length}</strong><span>Perfekt</span></div>
+      <div><strong>${total - scores.length}</strong><span>offen</span></div>
     </div>
-  );
+  `;
 }
 
 function NameList({ names, ratings }) {
-  if (!names.length) return <p className="muted">Noch keine Favoriten. Swipe los!</p>;
-  return (
+  if (!names.length) return html`<p className="muted">Noch keine Favoriten. Swipe los!</p>`;
+  return html`
     <div className="list" role="list">
-      {names.map((n) => (
-        <div className="list-item" key={n.id} role="listitem">
+      ${names.map((n) => html`
+        <div className="list-item" key=${n.id} role="listitem">
           <div>
-            <strong>{n.name}</strong>
-            <span>{n.origin.join(' · ')}</span>
+            <strong>${n.name}</strong>
+            <span>${n.origin.join(' · ')}</span>
           </div>
-          <b>{getActionByScore(ratings[n.id]).emoji} {ratings[n.id]}/3</b>
+          <b>${getActionByScore(ratings[n.id]).emoji} ${ratings[n.id]}/3</b>
         </div>
-      ))}
+      `)}
     </div>
-  );
+  `;
 }
 
 function Matching({ own, partner }) {
@@ -404,53 +383,53 @@ function Matching({ own, partner }) {
     .filter((r) => (r.a === 3 && (!r.b || r.b === 0)) || (r.b === 3 && (!r.a || r.a === 0)))
     .sort((x, y) => y.matchScore - x.matchScore);
 
-  return (
-    <>
+  return html`
+    <${React.Fragment}>
       <div className="match-hero">
-        <h2>{own.userName || 'Ich'} × {partner.userName || 'Partner'}</h2>
-        <p>{matches.length} gemeinsame Likes · {perfect.length} perfekte Matches</p>
+        <h2>${own.userName || 'Ich'} × ${partner.userName || 'Partner'}</h2>
+        <p>${matches.length} gemeinsame Likes · ${perfect.length} perfekte Matches</p>
       </div>
       <div className="stats-grid">
-        <div><strong>{matches.length}</strong><span>Matches</span></div>
-        <div><strong>{perfect.length}</strong><span>perfekt</span></div>
-        <div><strong>{matches[0]?.matchScore || 0}</strong><span>Top Score</span></div>
-        <div><strong>{oneSided.length}</strong><span>einseitig</span></div>
+        <div><strong>${matches.length}</strong><span>Matches</span></div>
+        <div><strong>${perfect.length}</strong><span>perfekt</span></div>
+        <div><strong>${matches[0]?.matchScore || 0}</strong><span>Top Score</span></div>
+        <div><strong>${oneSided.length}</strong><span>einseitig</span></div>
       </div>
-      {matches.length > 0 && (
-        <>
+      ${matches.length > 0 && html`
+        <${React.Fragment}>
           <h2>🏆 Top Matches</h2>
           <div className="match-list" role="list">
-            {matches.slice(0, 30).map((r) => <MatchRow key={r.id} row={r} />)}
+            ${matches.slice(0, 30).map((r) => html`<${MatchRow} key=${r.id} row=${r} />`)}
           </div>
-        </>
-      )}
-      {!matches.length && <p className="muted">Noch keine gemeinsamen Likes gefunden.</p>}
-      {oneSided.length > 0 && (
-        <>
+        <//>
+      `}
+      ${!matches.length && html`<p className="muted">Noch keine gemeinsamen Likes gefunden.</p>`}
+      ${oneSided.length > 0 && html`
+        <${React.Fragment}>
           <h2>💔 Einseitige Super-Favoriten</h2>
           <div className="match-list" role="list">
-            {oneSided.slice(0, 20).map((r) => <MatchRow key={r.id} row={r} />)}
+            ${oneSided.slice(0, 20).map((r) => html`<${MatchRow} key=${r.id} row=${r} />`)}
           </div>
-        </>
-      )}
-    </>
-  );
+        <//>
+      `}
+    <//>
+  `;
 }
 
 function MatchRow({ row }) {
-  return (
+  return html`
     <div className="match-row" role="listitem">
       <div>
-        <strong>{row.name}</strong>
-        <span>{row.origin.join(' · ')}</span>
+        <strong>${row.name}</strong>
+        <span>${row.origin.join(' · ')}</span>
       </div>
       <div className="score-pair">
-        <span>{row.a ?? '-'}/3</span>
-        <span>{row.b ?? '-'}/3</span>
-        <b>{row.matchScore}</b>
+        <span>${row.a ?? '-'}/3</span>
+        <span>${row.b ?? '-'}/3</span>
+        <b>${row.matchScore}</b>
       </div>
     </div>
-  );
+  `;
 }
 
-createRoot(document.getElementById('root')).render(<App />);
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);
