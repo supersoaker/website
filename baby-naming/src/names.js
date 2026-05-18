@@ -363,4 +363,5 @@ NAMES.push(
   {"id": "darcy", "name": "Darcy", "gender": "male", "origin": ["Englisch", "Französisch"], "style": ["historisch", "literarisch", "elegant"], "rarity": "mittel", "length": "mittel"},
   {"id": "byron", "name": "Byron", "gender": "male", "origin": ["Englisch"], "style": ["historisch", "literarisch", "elegant"], "rarity": "mittel", "length": "mittel"},
   {"id": "shelley", "name": "Shelley", "gender": "male", "origin": ["Englisch"], "style": ["historisch", "literarisch", "weich"], "rarity": "selten", "length": "mittel"}
+
 );
